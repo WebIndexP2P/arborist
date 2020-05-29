@@ -1,0 +1,114 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="mobile-web-app-capable" content="yes">
+
+        <link href="css/app.css" rel="stylesheet" type="text/css" />
+
+        <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+    </head>
+<body>
+
+    <div id="app"></div>
+
+    <div class="loader">
+        <img id="apploaderimg" src="" style="height:64px;width:64px;">
+        <div>Loading... (<span id="assetCount">0</span> of <span id="assetTotal">..</span>)</div>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="modal">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+          </div>
+        </div>
+    </div>
+
+    <script>
+
+        function isES6()
+        {
+          try
+          {
+              Function("() => {};"); return true;
+          }
+          catch(exception)
+          {
+              return false;
+          }
+        }
+
+        var addAsset = function(location, callback) {
+            if (location.substring(location.length - 4) == ".css") {
+                var fileref = document.createElement("link");
+                fileref.rel = "stylesheet";
+                fileref.type = "text/css";
+                fileref.href = location;
+                document.getElementsByTagName("head")[0].appendChild(fileref)
+
+                callback();
+            } else {
+                var fileref = document.createElement("script");
+                fileref.type = "text/javascript";
+                fileref.src = location;
+                fileref.onload = function(loadEvent) {
+                    callback(location);
+                }
+                document.getElementsByTagName("body")[0].appendChild(fileref)
+            }
+        }
+
+        var assets = [
+            "gx/bootstrap/css/bootstrap.min.css",
+            "gx/Font.Awesome/css/fontawesome.min.css",
+            "gx/Font.Awesome/css/solid.min.css",
+            "gx/jquery-growl/css/jquery.growl.css",
+
+            "gx/jQuery/jquery-{ver}.min.js",
+            "gx/popper.js/popper.min.js",
+            "gx/bootstrap/js/bootstrap.min.js",
+            "gx/mithriljs/mithril.min.js",
+            "gx/jquery-growl/js/jquery.growl.js",
+            "npm/tweetnacl/nacl.min.js",
+            "gx/buffer.js/buffer.js",
+            "gx/js-cid/cids.min.js",
+            "npm/ethers/dist/ethers.min.js",
+            "gx/js-ipld-cbor-native-sha256/ipldcbor.min.js",
+            "gx/libwip2p/libwip2p.js",
+            "gx/requirejs/require.js",
+
+            //<!--{REPLACEWITH_APPBUNDLE}-->
+        ]
+
+        document.getElementById('assetTotal').innerText = assets.length;
+
+        var loaderimg = document.getElementById('apploaderimg');
+        loaderimg.onload = function(e) {
+            // load all css async
+            // load all js sync
+            var assetIndex = 0;
+
+            var onAssetsComplete = function() {
+                requirejs(['index'], function(Index) {})
+            }
+            var onLoadComplete = function(location) {
+                assetIndex++;
+                document.getElementById('assetCount').innerText = assetIndex;
+                if (assetIndex < assets.length)
+                    addAsset(assets[assetIndex], onLoadComplete);
+                else
+                    onAssetsComplete();
+            }
+            addAsset(assets[assetIndex], onLoadComplete);
+        }
+
+        if (isES6()) {
+          loaderimg.src = "assets/arborist.svg";
+        } else {
+          document.getElementsByTagName('body')[0].textContent = "Your browser does not support ES6. Try a modern browser such as Brave, Chrome, Firefox or DuckDuckGo.";
+        }
+
+    </script>
+
+</body>
+</html>
