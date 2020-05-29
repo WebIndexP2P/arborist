@@ -113,6 +113,10 @@ define([
         console.log(err);
       })
     })
+    .catch((err)=>{
+      console.log(err);
+      $.growl.error({message: err})
+    })
   }
 
   var checkPaste = function(vnode, signedPasteDetails) {
@@ -198,10 +202,6 @@ define([
       })
     })
     .then(function(response){
-      if (response.error) {
-        $.growl.error({message: response.error});
-        return;
-      }
       return PasteDoc.deserialize(response.result.cborData)
       .then(async function(pasteDoc){
 
@@ -216,7 +216,10 @@ define([
 
         if (pasteDoc.livechathistory) {
           for (var a = 0; a < pasteDoc.livechathistory.length; a++) {
-            await fetchAccountChats(vnode, pasteDoc.livechathistory[a].toLowerCase());
+            await fetchAccountChats(vnode, pasteDoc.livechathistory[a].toLowerCase())
+            .catch((err)=>{
+              console.log(err);
+            });
           }
         }
 
