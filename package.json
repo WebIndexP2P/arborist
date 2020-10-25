@@ -2,7 +2,7 @@
   "author": "",
   "bugs": {},
   "dependencies": {
-    "ethers": "^4.0.39",
+    "ethers": "^5.0.17",
     "tweetnacl": "^1.0.3"
   },
   "description": "",
@@ -93,4 +93,3 @@
   },
   "version": "0.8.2"
 }
-

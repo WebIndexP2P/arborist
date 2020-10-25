@@ -39,7 +39,7 @@ var filesToCopy = [
 
     {type:"file", src: "/gx/mithriljs/mithril.min.js"},
 
-    {type:"file", src: "/node_modules/ethers/dist/ethers.min.js", dst:"/npm/ethers/dist/ethers.min.js"},
+    {type:"file", src: "/node_modules/ethers/dist/ethers.umd.min.js", dst:"/npm/ethers/dist/ethers.umd.min.js"},
 
     {type:"file", src: "/gx/requirejs/require.js"},
 
