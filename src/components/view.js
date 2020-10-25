@@ -34,7 +34,7 @@ define([
 
         libwip2p.Peers.getActivePeerSession()
         .then((session)=>{
-          if (session.connReady) {
+          if (session.connState == 4) {
             return session.sendMessage({
                 method: "bundle_get",
                 params: [{account:vnode.state.account}]
@@ -106,10 +106,13 @@ define([
 
         })
         .catch((err)=>{
-            if (err == 'peerSession not ready') {}
-            else {
-                console.error(err)
-            }
+          vnode.state.queryInProgress = false;
+          if (err == 'peerSession not ready') {}
+          else {
+              //console.error(err)
+              vnode.state.error = err;
+              m.redraw()
+          }
         })
     }
 
@@ -162,7 +165,7 @@ define([
 
             libwip2p.Peers.getActivePeerSession()
             .then((session)=>{
-                if (session.connReady)
+                if (session.connState == 4)
                     doQuery(vnode);
             })
             .catch((err)=>{

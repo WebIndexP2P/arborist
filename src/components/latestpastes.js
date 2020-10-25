@@ -17,7 +17,7 @@ define([
       //Peers.sendMessage({method: "ui_getLatestPastes"})
       libwip2p.Peers.getActivePeerSession()
       .then((session)=>{
-        if (session.connReady) {
+        if (session.connState == 4) {
           return session.sendMessage({method: "bundle_getRecent"})
         } else {
           throw new Error("peerSession not ready")

@@ -65,6 +65,9 @@ define([
 
     libwip2p.Peers.init()
     .then(()=>{
+      return libwip2p.Peers.addPeer("wss://tulip.wip2p.com");
+    })
+    .then(()=>{
       libwip2p.Account.initWallet();
       libwip2p.Following.init();
       stage2();

@@ -74,9 +74,9 @@
       "version": "5.4.0"
     },
     {
-      "hash": "QmWRCQ8C3gZkGqRM6d8YoKXY93rwwixy9fyszV865v2BUA",
+      "hash": "QmSY9o6TvoCrW7HrSRV5BAK1AXXc85jFGBdT7sXvvmzZL7",
       "name": "libwip2p",
-      "version": "0.1.5"
+      "version": "0.1.12"
     }
   ],
   "gxVersion": "0.14.0",
@@ -86,9 +86,11 @@
   "scripts": {
     "build": "node bundle.js",
     "clean": "rimraf build/",
+    "publish": "ipfs add build -r",
     "test": "echo \"Error: no test specified\" && exit 1",
     "web": "devserver -r src -b 0.0.0.0:7000 -include gx/libwip2p:../libwip2p/dist",
-    "web-build": "devserver -r build -b 0.0.0.0:7000 --api http://127.0.0.1:9000"
+    "web-build": "devserver -r build -b 0.0.0.0:7000 --nogx --api http://127.0.0.1:9000"
   },
-  "version": "0.8.1"
+  "version": "0.8.2"
 }
+

@@ -357,7 +357,10 @@ define([
             m.redraw();
           } else {
             //console.log(err);
-            $.growl.error({message: err.message});
+            if (err.message)
+              $.growl.error({message: err.message});
+            else
+              $.growl.error({message: err});
           }
         })
     }
@@ -394,6 +397,7 @@ define([
 
         renderBtnPublish(vnode);
         renderBtnPrepareAndSign(vnode);
+
 
         fetchAccountDetails(vnode);
         //fetchLimits(vnode);
@@ -527,7 +531,13 @@ define([
 
             vnode.state.account = libwip2p.Account.getWallet().address;
             vnode.state.accountDetails = null;
-            fetchAccountDetails(vnode);
+
+            libwip2p.Peers.getActivePeerSession()
+            .then((session)=>{
+              if (session.connState == 4) {
+                fetchAccountDetails(vnode);
+              }
+            });
         },
 
         onremove: function(vnode) {
