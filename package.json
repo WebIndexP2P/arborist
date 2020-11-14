@@ -2,7 +2,7 @@
   "author": "",
   "bugs": {},
   "dependencies": {
-    "ethers": "^5.0.17",
+    "ethers": "^5.0.19",
     "tweetnacl": "^1.0.3"
   },
   "description": "",
@@ -91,5 +91,5 @@
     "web": "devserver -r src -b 0.0.0.0:7000 -include gx/libwip2p:../libwip2p/dist",
     "web-build": "devserver -r build -b 0.0.0.0:7000 --nogx --api http://127.0.0.1:9000"
   },
-  "version": "0.8.2"
+  "version": "0.8.4"
 }

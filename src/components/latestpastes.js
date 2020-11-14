@@ -64,11 +64,12 @@ define([
             vnode.state.latestPastes = [];
             vnode.state.queryInProgress = true;
 
-            vnode.state.newPasteHandler = RefreshListener.subscribe('newpaste', function() {
+            vnode.state.newPasteHandler = function() {
               vnode.state.latestPastes = [];
               vnode.state.queryInProgress = true;
               fetchLatestPastes(vnode);
-            })
+            }
+            libwip2p.Peers.events.on('bundlereceived', vnode.state.newPasteHandler)
 
             vnode.state.peerConnectHandler = function() {
               vnode.state.latestPastes = [];
@@ -93,6 +94,7 @@ define([
           RefreshListener.unsubscribe('newpaste', vnode.state.newPasteHandler);
           libwip2p.Peers.events.off('peerconnected', vnode.state.peerConnectHandler);
           libwip2p.Peers.events.off('peerdisconnected', vnode.state.peerDisconnectHandler);
+          libwip2p.Peers.events.off('bundlereceived', vnode.state.newPasteHandler);
         },
 
         view: function(vnode) {

@@ -37,7 +37,7 @@ define([
 
         e.preventDefault();
 
-        var seedPhrase = ethers.utils.HDNode.entropyToMnemonic(libwip2p.Account.getWallet().privateKey);
+        var seedPhrase = ethers.utils.entropyToMnemonic(libwip2p.Account.getWallet().privateKey);
 
         var modalContent = {view: function(){
             return [

@@ -120,7 +120,7 @@ define([
   }
 
   var checkPaste = function(vnode, signedPasteDetails) {
-    var pastedata = signedPasteDetails.pastedata[0];
+    var pastedata = signedPasteDetails.cborData[0];
     var data = buffer.Buffer.from(pastedata, 'base64');
     PasteDoc.deserialize(data)
     .then((doc)=>{
