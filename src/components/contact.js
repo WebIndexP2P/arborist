@@ -13,6 +13,14 @@ define(function() {
                     m("div",
                         m("strong", m("i.fas fa-comments", {style:"font-size:30px;margin-right:5px;"}), "BitMessage"),
                         m("pre", "BM-2cXNZhyDtVUSohbLBv4Q2Kk3oZ3T2w72vT")
+                    ),
+                    m("div",
+                        m("strong", m("i.fas fa-comments", {style:"font-size:30px;margin-right:5px;"}), "Matrix"),
+                        m("pre", m("a", {href:"https://app.element.io/#/room/#wip2p:matrix.org"}, "#wip2p:matrix.org"))
+                    ),
+                    m("div",
+                        m("strong", m("i.fas fa-comments", {style:"font-size:30px;margin-right:5px;"}), "Reddit"),
+                        m("pre", m("a", {href:"https://www.reddit.com/r/wip2p"}, "/r/wip2p"))
                     )
 
                     /*m("div", {style:"margin-top:20px;"},

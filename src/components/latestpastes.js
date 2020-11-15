@@ -91,7 +91,6 @@ define([
         },
 
         onremove: function(vnode) {
-          RefreshListener.unsubscribe('newpaste', vnode.state.newPasteHandler);
           libwip2p.Peers.events.off('peerconnected', vnode.state.peerConnectHandler);
           libwip2p.Peers.events.off('peerdisconnected', vnode.state.peerDisconnectHandler);
           libwip2p.Peers.events.off('bundlereceived', vnode.state.newPasteHandler);

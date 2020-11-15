@@ -15,9 +15,9 @@ define(function() {
                     m("h4", {style:"text-align:center;"}, "FAQ"),
 
                     m("strong", "Q. How do I sign up / log in?"),
-                    m("p", "A. You can't, at least not in the traditional sense. Instead your browser will automatically generate a unique account when you first visit the website, this is essentially your account. Just make sure to backup the seed phrase to a safe place to restore your account if need be."),
+                    m("p", "A. You can't, at least not in the traditional sense. Instead your browser will automatically generate a unique identity when you first visit the website, this is essentially your account. Just make sure to backup the seed phrase to a safe place to restore your account if need be."),
 
-                    m("strong", "Q. Why is there in invite system?"),
+                    m("strong", "Q. Why is there an invite system?"),
                     m("p", "A. The invite system is used to obtain p2p consensus on the state of the data. It also supports punishing abusers, which helps the platform scale."),
 
                     m("strong", "Q. How does the invite system work?"),
