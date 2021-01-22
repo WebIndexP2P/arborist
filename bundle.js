@@ -23,8 +23,8 @@ var filesToCopy = [
     {type:"folder", src: "src/assets", dst: "assets/"},
 
     // GX deps
-    {type:"file", src: "/gx/bootstrap/css/bootstrap.min.css"},
-    {type:"file", src: "/gx/bootstrap/js/bootstrap.min.js"},
+    {type:"file", src: "/node_modules/bootstrap/dist/css/bootstrap.min.css", dst:"/npm/bootstrap/dist/css/bootstrap.min.css"},
+    {type:"file", src: "/node_modules/bootstrap/dist/js/bootstrap.min.js", dst:"/npm/bootstrap/dist/js/bootstrap.min.js"},
 
     {type:"file", src: "/gx/Font.Awesome/css/fontawesome.min.css"},
     {type:"file", src: "/gx/Font.Awesome/css/solid.min.css"},
@@ -37,7 +37,7 @@ var filesToCopy = [
 
     {type:"file", src: "/gx/popper.js/popper.min.js"},
 
-    {type:"file", src: "/gx/mithriljs/mithril.min.js"},
+    {type:"file", src: "/gx/mithril.js/mithril.min.js"},
 
     {type:"file", src: "/node_modules/ethers/dist/ethers.umd.min.js", dst:"/npm/ethers/dist/ethers.umd.min.js"},
 

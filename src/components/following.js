@@ -77,7 +77,7 @@ define([
             newPaste = m("span.badge badge-danger", {style:"margin-left:5px;font-size:14px;"}, "New paste ", Utils.secondsToHuman(timestamp - accountRow.newPaste), " ago");
         return m("div", {style:"min-height:50px;"},
             m("a", {href:"#", onclick: removeFollower.bind(null, vnode, accountRow.account)}, m("i.fas fa-trash", {style:"float:right;margin-left:10px;margin-top:5px;"})),
-            m("a", {href:"/view/" + accountRow.account, oncreate:m.route.link},
+            m(m.route.Link, {href:"/view/" + accountRow.account},
                 m("img", {src: MakeBlockies(accountRow.account), style:"margin-right:10px;float:left;height:40px;width:40px;border-radius:15%;"}),
                 m("span", {style:'word-wrap:break-word;font-family:"Courier New", Courier, monospace;color:#000000;'}, accountRow.account),
                 newPaste

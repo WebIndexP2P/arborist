@@ -67,7 +67,7 @@ define([
               var mhashBuf = buffer.Buffer.from(vnode.state.result.multihash.substr(2), 'hex');
               var cid = new Cids(1, 'dag-cbor', mhashBuf);
               vnode.state.cid = cid.toString();
-              vnode.state.cidLink = m("a", {"data-toggle":"dropdown", href:"#", onclick:function(){return false;}}, vnode.state.cid);
+              vnode.state.cidLink = m("a", {"data-toggle":"dropdown", href:"#"}, vnode.state.cid);
             }
 
             // only do the cbor stuff if it exists
@@ -201,8 +201,8 @@ define([
                     m("div.dropdown-menu",
                         //m("a.dropdown-item", {href:"#", onclick: onManualUploadToIpfs.bind(null, vnode)}, m("i.fas fa-upload"), " Upload to IPFS"),
                         m("a.dropdown-item", {target:"_blank", href:window.preferedIpfsGateway + '/api/v0/dag/get?arg=' + vnode.state.cid}, m("i.fas fa-binoculars"), " View IPFS content"),
-                        m("a.dropdown-item", {href:"/ipfscheck/" + vnode.state.cid, oncreate:m.route.link}, m("i.fas fa-globe"), " IPFS Dist. Checker"),
-                        m("a.dropdown-item", {href:"/ipldview/" + vnode.state.cid, oncreate: m.route.link}, m("i.fas fa-project-diagram"), " IPLD Viewer")
+                        m(m.route.Link, {class:"dropdown-item", href:"/ipfscheck/" + vnode.state.cid}, m("i.fas fa-globe"), " IPFS Dist. Checker"),
+                        m(m.route.Link, {class:"dropdown-item", href:"/ipldview/" + vnode.state.cid}, m("i.fas fa-project-diagram"), " IPLD Viewer")
                     )
                 ),
                 (function() {

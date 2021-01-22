@@ -37,9 +37,7 @@ define([
         .then(function() {
             vnode.state.btnGoEnabled = true;
             renderBtnGoElement(vnode);
-
             renderBreadcrumbs(vnode);
-            renderDagContent(vnode);
 
             m.redraw();
         })
@@ -55,15 +53,14 @@ define([
         vnode.state.breadcrumbsElement = m(IpldBreadcrumbs, {path: vnode.state.ipldwalk.getPath(), onLinkClick: onBreadcrumbClick.bind(null, vnode)});
     }
 
-    var renderDagContent = function(vnode) {
+    /*var renderDagContent = function(vnode) {
         vnode.state.dagContent = [ m(PrettyJson, {key: Math.round(), iplddoc: vnode.state.ipldwalk.getContentRaw(), onLinkClick: onLinkClick.bind(null, vnode)}) ]
-    }
+    }*/
 
     var onBreadcrumbClick = function(vnode, depth) {
         vnode.state.ipldwalk.navigateUp(depth)
         .then(function() {
             renderBreadcrumbs(vnode);
-            renderDagContent(vnode);
             m.redraw();
         })
         return false;
@@ -79,7 +76,6 @@ define([
         vnode.state.ipldwalk.navigateDown(path, cid)
         .then(function() {
             renderBreadcrumbs(vnode);
-            renderDagContent(vnode);
             vnode.state.linkClicked = false;
             m.redraw();
         })
@@ -157,7 +153,11 @@ define([
                     ),
                     vnode.state.errorMessage,
                     vnode.state.breadcrumbsElement,
-                    vnode.state.dagContent
+                    (function(){
+                      if (vnode.state.ipldwalk != null) {
+                        return m(PrettyJson, {iplddoc: vnode.state.ipldwalk.getContentRaw(), onLinkClick: onLinkClick.bind(null, vnode)})
+                      }
+                    })()
                 )
             )
         }

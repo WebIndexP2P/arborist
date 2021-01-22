@@ -50,10 +50,15 @@ define([
     return {
 
         oninit: function(vnode) {
+          vnode.state.elements = m("div",
+            recurseConvertObj(vnode, vnode.attrs.iplddoc)
+          )
+        },
 
-            vnode.state.elements = m("div",
-                recurseConvertObj(vnode, vnode.attrs.iplddoc)
-            )
+        onbeforeupdate: function(vnode) {
+          vnode.state.elements = m("div",
+            recurseConvertObj(vnode, vnode.attrs.iplddoc)
+          )
         },
 
         view: function(vnode) {

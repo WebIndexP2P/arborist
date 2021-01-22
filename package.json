@@ -2,7 +2,8 @@
   "author": "",
   "bugs": {},
   "dependencies": {
-    "ethers": "^5.0.19",
+    "bootstrap": "^4.6.0",
+    "ethers": "^5.0.26",
     "tweetnacl": "^1.0.3"
   },
   "description": "",
@@ -13,16 +14,6 @@
     "uglify-es": "^3.3.9"
   },
   "gxDependencies": [
-    {
-      "hash": "QmNpTipGYH4PHrC5CYojWP5jZJ28Zor2KJp5T4HpwBovkq",
-      "name": "bootstrap",
-      "version": "4.3.1"
-    },
-    {
-      "hash": "QmcbTFr9Hs1Ha7G69tQpm2YoDEkaMaEw2MDeupEnpdmzfo",
-      "name": "mithriljs",
-      "version": "1.1.6"
-    },
     {
       "hash": "QmdhnztmcS1eCQmcKUABgxKvjrYGQkLA8AswCjTHSohw5n",
       "name": "jQuery",
@@ -74,9 +65,19 @@
       "version": "5.4.0"
     },
     {
-      "hash": "QmSY9o6TvoCrW7HrSRV5BAK1AXXc85jFGBdT7sXvvmzZL7",
+      "hash": "QmeboEW8z8urR8p5WhhHow8rkQFFxjUEF6v4YygUJeSXDb",
       "name": "libwip2p",
-      "version": "0.1.12"
+      "version": "0.1.14"
+    },
+    {
+      "hash": "QmShu9QGEBXSeSrJ7cuZkW4K7f5wsVi18p9NmH5aGtvcwi",
+      "name": "wip2p-settings",
+      "version": "0.1.0"
+    },
+    {
+      "hash": "QmWo39oHHFDwQNwrj2PkafPZW9WG7cRDFfQExRezDwg6N7",
+      "name": "mithril.js",
+      "version": "2.0.4-routefix-r2"
     }
   ],
   "gxVersion": "0.14.0",
@@ -91,5 +92,5 @@
     "web": "devserver -r src -b 0.0.0.0:7000 -include gx/libwip2p:../libwip2p/dist",
     "web-build": "devserver -r build -b 0.0.0.0:7000 --nogx --api http://127.0.0.1:9000"
   },
-  "version": "0.8.6"
+  "version": "0.8.7"
 }

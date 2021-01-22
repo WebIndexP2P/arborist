@@ -161,7 +161,7 @@ define([
                     m("a.dropdown-item", {href:"#", onclick: showWarning.bind(this, vnode, 'new')}, m("i.fas fa-user-plus", {style:"width:25px;"}), "New account"),
                     m("a.dropdown-item", {href:"#", onclick: showWarning.bind(this, vnode, 'restore')}, m("i.fas fa-user-cog", {style:"width:25px;"}), "Restore account"),
                     m("div.dropdown-divider"),
-                    m("a.dropdown-item", {href:"/settings", oncreate: m.route.link}, m("i.fas fa-cog", {style:"width:25px;"}), "Settings")
+                    m(m.route.Link, {class:"dropdown-item", href:"/settings"}, m("i.fas fa-cog", {style:"width:25px;"}), "Settings")
                 )
             )
         }

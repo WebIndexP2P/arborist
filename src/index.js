@@ -2,18 +2,17 @@
 
 define([
     'lib/mithrilnav',
+    'lib/version',
 
     'components/pagelayout',
     'components/header',
     'components/edit',
     'components/view_form',
     'components/view',
-    'components/about',
     'components/faq',
     'components/api',
-    'components/contact',
     'components/donate',
-    'components/settings',
+    'gx/wip2p-settings/src/settings',
     'components/following',
     'components/ipfscheck',
     'components/importpaste',
@@ -24,21 +23,20 @@ define([
     'components/blogger/view',
     'components/livechat',
     'components/importbundle',
-    'components/invites',
-    'components/latestpastes'
+    'components/latestpastes',
+    'components/goyacy'
 
 ], function(
     MithrilNav,
+    Version,
 
     PageLayout,
     Header,
     PageEdit,
     PageViewForm,
     PageView,
-    PageAbout,
     PageFAQ,
     PageAPI,
-    PageContact,
     PageDonate,
     PageSettings,
     PageFollowing,
@@ -51,8 +49,8 @@ define([
     PageBloggerView,
     PageLiveChat,
     PageImportBundle,
-    PageInvites,
-    PageLatestPastes
+    PageLatestPastes,
+    PageGoYacy
 ){
 
     MithrilNav.overrideMithrilRouting();
@@ -122,7 +120,8 @@ define([
               return m(PageLayout, {}, m(PageAPI))
           }},
           "/about": {render: function() {
-              return m(PageLayout, {}, m(PageAbout))
+            m.route.set("/settings?tab=about");
+              //return m(PageLayout, {}, m(PageAbout))
           }},
           "/faq": {render: function() {
               return m(PageLayout, {}, m(PageFAQ))
@@ -130,14 +129,18 @@ define([
           "/donate": {render: function() {
               return m(PageLayout, {}, m(PageDonate))
           }},
-          "/contact": {render: function() {
-              return m(PageLayout, {}, m(PageContact))
-          }},
           "/peers": {render: function() {
               return m(PageLayout, {}, m(PagePeers))
           }},
           "/settings": {render: function() {
-              return m(PageLayout, {}, m(PageSettings))
+              return m(PageLayout, {}, m(PageSettings, {
+                name:"Arborist",
+                version: "v" + Version,
+                description: m("span", " is the default UI for interacting with WebIndexP2P tree's. It's primary focus is to provide users with an easy to use interface for managing their data, especially where certain dapps may restrict what sort of changes a user can make to their data bundle, Arborist has no restrictions.",
+                  m("p", {style:"margin-top:20px;"}, "If you'd like to financially support the project, head over to the ", m(m.route.Link, {href:"/donate"}, "donate"), " page to see if there is an option you'd be interested in.")
+                ),
+                icon:"assets/arborist.svg"
+              }))
           }},
           "/following": {render: function() {
               return m(PageLayout, {}, m(PageFollowing))
@@ -179,13 +182,17 @@ define([
               return m(PageLayout, {}, m(PageImportBundle))
           }},
           "/invites": {render: function() {
-              return m(PageLayout, {}, m(PageInvites))
+            m.route.set("/settings?tab=invites")
+              //return m(PageLayout, {}, m(PageInvites))
           }},
           "/invites/:account": {render: function() {
               return m(PageLayout, {}, m(PageInvites))
           }},
           "/latest": {render: function() {
               return m(PageLayout, {}, m(PageLatestPastes))
+          }},
+          "/goyacy": {render: function() {
+              return m(PageLayout, {}, m(PageGoYacy))
           }}
       })
 

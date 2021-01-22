@@ -24,10 +24,7 @@ define([
         var mins = Math.ceil(wordCount / 200);
         return m("div", {style:"margin-bottom:20px;"},
           m("h4", blogpost.t,
-            m("a", {
-                href:"/blogger/" + vnode.attrs.account + '/' + blogpost.id,
-                oncreate: m.route.link
-              },
+            m(m.route.Link, {href:"/blogger/" + vnode.attrs.account + '/' + blogpost.id},
               m("i.fa fa-link", {style:"font-size:14px;margin-left:20px;"})
             )
           ),

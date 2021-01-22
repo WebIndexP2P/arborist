@@ -132,7 +132,7 @@ define([
                     timeSince = "Signed " + timeSince
 
                     return m("div", {style:"margin-bottom:5px;max-width:300px;" + borderBottom},
-                        m("a", {href:"/view/" + account, oncreate:m.route.link, style:"outline: none;"},
+                        m(m.route.Link, {href:"/view/" + account, style:"outline: none;"},
                             m("img", {src: MakeBlockies(account), style:"margin-bottom:5px;margin-right: 10px;height:32px;width:32px;border-radius:15%;"})
                         ),
                         function(){

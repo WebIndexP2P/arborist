@@ -53,47 +53,47 @@ define([
         view: function(vnode) {
             return m("div.d-flex flex-column flex-md-row align-items-center p-2 px-md-4 mb-3 bg-white border-bottom box-shadow",
                 m("h4.my-0 mr-md-auto font-weight-normal",
-                    m("a", {href:"/", oncreate: m.route.link, style:"outline:none;color: inherit; text-decoration: none;"},
+                    m(m.route.Link, {href:"/", style:"outline:none;color: inherit; text-decoration: none;"},
                         m("img", {src:"assets/arborist.svg", style:"height:48px;width:48px;margin-right:10px;"}),
                         "Arborist"
                     )
                 ),
                 m("nav.navbar my-2 my-md-0 mr-md-3",
-                    m("a.p-2 text-dark", {href:"/", oncreate: m.route.link}, "Edit"),
-                    m("a.p-2 text-dark", {href:"/view", oncreate: m.route.link}, "View"),
+                    m(m.route.Link, {class:"p-2 text-dark", href:"/"}, "Edit"),
+                    m(m.route.Link, {class:"p-2 text-dark", href:"/view"}, "View"),
                     (function(){
                       if (window.isPortrait) {
-                        return m("a.p-2 text-dark", {href:"/latest", oncreate: m.route.link}, "Latest");
+                        return m(m.route.Link, {class:"p-2 text-dark", href:"/latest"}, "Latest");
                       }
                     })(),
-                    m("a.p-2 text-dark", {href:"/following", oncreate: m.route.link}, "Following", vnode.state.unreadCountElement),
-                    m("a.p-2 text-dark", {href:"/invites", oncreate: m.route.link}, "Invites"),
+                    m(m.route.Link, {class:"p-2 text-dark", href:"/following"}, "Following", vnode.state.unreadCountElement),
+                    m(m.route.Link, {class:"p-2 text-dark", href:"/invites"}, "Invites"),
                     m("div.dropdown",
-                        m("a.p-2 text-dark", {href:"#", onclick:function(){return false;}, 'data-toggle':'dropdown'}, "Tools",
+                        m("a.p-2 text-dark", {href:"#", 'data-toggle':'dropdown'}, "Tools",
                             m("div.dropdown-menu dropdown-menu-left",
-                                m("a.dropdown-item", {href:"/ipfscheck", oncreate:m.route.link}, m("i.fas fa-globe"), " IPFS Dist. Checker"),
-                                m("a.dropdown-item", {href:"/importpaste", oncreate:m.route.link}, m("i.fas fa-file-import"), " IPFS Import"),
-                                m("a.dropdown-item", {href:"/ipldview", oncreate:m.route.link}, m("i.fas fa-binoculars"), " IPLD Viewer"),
-                                m("a.dropdown-item", {href:"/importbundle", oncreate:m.route.link}, m("i.fas fa-object-group"), " Signed Bundle Import"),
+                                m(m.route.Link, {class:"dropdown-item", href:"/ipfscheck"}, m("i.fas fa-globe"), " IPFS Dist. Checker"),
+                                m(m.route.Link, {class:"dropdown-item", href:"/importpaste"}, m("i.fas fa-file-import"), " IPFS Import"),
+                                m(m.route.Link, {class:"dropdown-item", href:"/ipldview"}, m("i.fas fa-binoculars"), " IPLD Viewer"),
+                                m(m.route.Link, {class:"dropdown-item", href:"/importbundle"}, m("i.fas fa-object-group"), " Signed Bundle Import"),
                                 m("div.dropdown-divider"),
-                                m("a.dropdown-item", {href:"/enslist", oncreate:m.route.link}, m("i.fas fa-external-link-alt"), " ENS List"),
-                                m("a.dropdown-item", {href:"/yggdrasil", oncreate:m.route.link}, m("i.fas fa-sitemap"), " Yggdrasil Services"),
-                                m("a.dropdown-item", {href:"/blogger", oncreate:m.route.link}, m("i.fas fa-pen"), " Blogger"),
-                                m("a.dropdown-item", {href:"/livechat", oncreate:m.route.link}, m("i.fas fa-comment"), " Live Chat")
+                                m(m.route.Link, {class:"dropdown-item", href:"/enslist"}, m("i.fas fa-external-link-alt"), " ENS List"),
+                                m(m.route.Link, {class:"dropdown-item", href:"/yggdrasil"}, m("i.fas fa-sitemap"), " Yggdrasil Services"),
+                                m(m.route.Link, {class:"dropdown-item", href:"/blogger"}, m("i.fas fa-pen"), " Blogger"),
+                                m(m.route.Link, {class:"dropdown-item", href:"/livechat"}, m("i.fas fa-comment"), " Live Chat"),
+                                m(m.route.Link, {class:"dropdown-item", href:"/goyacy"}, m("i.fas fa-search"), " GoYacy")
                             )
                         )
                     ),
                     m("div.dropdown",
-                        m("a.p-2 text-dark", {href:"#", onclick:function(){return false;}, 'data-toggle':'dropdown'}, "Info",
+                        m("a.p-2 text-dark", {href:"#", 'data-toggle':'dropdown'}, "Info",
                             m("div.dropdown-menu dropdown-menu-left", {'aria-labelledby':'dropdown-info'},
-                                m("a.dropdown-item", {href:"/about", oncreate:m.route.link}, m("i.fas fa-info-circle"), " About"),
-                                m("a.dropdown-item", {href:"/faq", oncreate:m.route.link}, m("i.fas fa-question-circle"), " FAQ"),
-                                m("a.dropdown-item", {href:"/api", oncreate:m.route.link}, m("i.fas fa-project-diagram"), " API"),
-                                m("a.dropdown-item", {href:"/contact", oncreate:m.route.link}, m("i.fas fa-envelope"), " Contact")
+                                m(m.route.Link, {class:"dropdown-item", href:"/about", oncreate:m.route.link}, m("i.fas fa-info-circle"), " About"),
+                                m(m.route.Link, {class:"dropdown-item", href:"/faq", oncreate:m.route.link}, m("i.fas fa-question-circle"), " FAQ"),
+                                m(m.route.Link, {class:"dropdown-item", href:"/api", oncreate:m.route.link}, m("i.fas fa-project-diagram"), " API")
                             )
                         )
                     ),
-                    m("a.p-2 text-dark", {href:"/donate",    oncreate: m.route.link}, "Donate")
+                    m(m.route.Link, {class:"p-2 text-dark", href:"/donate"}, "Donate")
                 ),
                 m(Account)
             )

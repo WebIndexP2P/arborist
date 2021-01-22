@@ -8,7 +8,7 @@ define(function(){
         return false;
     }
 
-    return {  
+    return {
         view: function(vnode) {
             return m("nav",
                 m("ol.breadcrumb",
@@ -19,5 +19,5 @@ define(function(){
             )
         }
     }
-    
+
 })
