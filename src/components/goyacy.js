@@ -16,10 +16,18 @@ define(function() {
     })
   }
 
+  var doSearch = function(vnode) {
+    var query = $('#searchBox').val();
+    var idx = Math.floor(Math.random() * vnode.state.yacyNodes.length)
+    var targetUrl = vnode.state.yacyNodes[idx] + '/yacysearch.html?query=' + query;
+    window.open(targetUrl, "_blank");
+  }
+
   return {
 
     oninit: function(vnode) {
       vnode.state.yacyNodes = null;
+      vnode.state.showNodes = false;
 
       vnode.state.peerChangeHandler = function() {
         fetchYacyNodes(vnode);
@@ -38,21 +46,43 @@ define(function() {
     view: function(vnode) {
 
       return m("div.container",
-        m("div", {style:"margin-bottom:10px;"},
-          m("div", {style:"vertical-align:top;margin-top:-10px;display:inline-block;font-size:70px;color:#2080c0;font-weight:bold;"}, "Go"),
-          m("img", {src:"assets/yacy.png", height:80})
+        m("div.row",
+          m("div.col-12", {style:"text-align:center;"},
+            m("div", {style:"vertical-align:top;margin-top:-10px;display:inline-block;font-size:70px;color:#2080c0;font-weight:bold;"}, m("i","Go")),
+            m("img", {src:"assets/yacy.png", height:80})
+          )
         ),
-        m("h5", "Find a public Yacy node."),
-        m("div", {style:"margin-bottom:20px;"},
-          (function(){
-            if (vnode.state.yacyNodes == null) {
-              return m("div.spinner-border")
-            }
+        m("div.row", {style:"margin-bottom:20px;"},
+          m("div.col-12", {style:"text-align:center;"},
+            m("h5", "Search via public Yacy nodes"),
+            m("div.input-group mb-3 col-12 col-md-9 col-lg-7 offset-md-2 offset-lg-3",
+              m("input.form-control", {type:"text", id:"searchBox"}),
+              m("div.input-group-append",
+                m("button.btn btn-outline-secondary", {onclick: doSearch.bind(null, vnode)}, "Search")
+              )
+            ),
+            (function(){
+              if (vnode.state.showNodes == true) {
+                return null;
+              }
+              return m("div", m("a", {href:"#", onclick: function(){
+                vnode.state.showNodes = true;
+                return false;
+              }}, "Show public nodes"))
+            })(),
+            (function(){
+              if (vnode.state.yacyNodes == null) {
+                return m("div.spinner-border")
+              }
+              if (vnode.state.showNodes == false) {
+                return null;
+              }
 
-            return vnode.state.yacyNodes.map(function(node, idx){
-              return m("div", m("a", {style:"font-size:18px;", href: node, target: "_blank"}, node))
-            })
-          })()
+              return vnode.state.yacyNodes.map(function(node, idx){
+                return m("div", m("a", {style:"font-size:18px;", href: node, target: "_blank"}, node))
+              })
+            })()
+          )
         )
       )
     }
