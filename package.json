@@ -70,9 +70,9 @@
       "version": "0.1.14"
     },
     {
-      "hash": "QmShu9QGEBXSeSrJ7cuZkW4K7f5wsVi18p9NmH5aGtvcwi",
+      "hash": "QmTPpGj9uUrPrzkfs5skfWuooaYaSv31DqivSHTsBHhJ4f",
       "name": "wip2p-settings",
-      "version": "0.1.0"
+      "version": "0.1.1"
     },
     {
       "hash": "QmWo39oHHFDwQNwrj2PkafPZW9WG7cRDFfQExRezDwg6N7",
@@ -92,5 +92,6 @@
     "web": "devserver -r src -b 0.0.0.0:7000 -include gx/libwip2p:../libwip2p/dist",
     "web-build": "devserver -r build -b 0.0.0.0:7000 --nogx --api http://127.0.0.1:9000"
   },
-  "version": "0.8.8"
+  "version": "0.8.9"
 }
+

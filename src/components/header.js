@@ -2,10 +2,12 @@
 
 define([
     'components/account',
-    'lib/refreshlistener'
+    'lib/refreshlistener',
+    'gx/wip2p-settings/src/peeridmodal'
 ], function(
     Account,
-    RefreshListener
+    RefreshListener,
+    PeerChangeModal
 ) {
 
     return {
@@ -34,10 +36,9 @@ define([
             }
             libwip2p.Peers.events.on('authed', vnode.state.onAuthHandler);
 
-            vnode.state.onPeerIdChangedHandler = function(newPeerId) {
-              var origPeerId = libwip2p.Peers.getActive().peerId;
-              console.log('PeerId has changed from ' + origPeerId + ' to ' + newPeerId);
-              $.growl.error({message: 'PeerId has changed'});
+            vnode.state.onPeerIdChangedHandler = function(endpoint, origPeerId, newPeerId) {
+              //console.log('Peer at ' + endpoint + ' has changed Id from ' + origPeerId + ' to ' + newPeerId);
+              PeerChangeModal.show(endpoint, origPeerId, newPeerId);
             }
             libwip2p.Peers.events.on('peeridchanged', vnode.state.onPeerIdChangedHandler);
 
