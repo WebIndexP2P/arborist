@@ -57,9 +57,17 @@ define(function(){
         return date.getDate() + ' ' + monthNames[date.getMonth()] + ' ' + date.getFullYear();
     }
 
+    var is_IP = function(str) {
+      if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(str)) {
+        return (true)
+      }
+      return (false)
+    }
+
     return {
         secondsToHuman: secondsToHuman,
         prettyPrint: prettyPrint,
-        dateSimpleFormat: dateSimpleFormat
+        dateSimpleFormat: dateSimpleFormat,
+        is_IP: is_IP
     }
 })

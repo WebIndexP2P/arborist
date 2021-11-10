@@ -1,11 +1,17 @@
 'use strict';
 
 define([
+    'gx/js-cid/cids.min',
+
     'lib/pastedoc',
-    'lib/refreshlistener'
+    'lib/refreshlistener',
+    'lib/utils'
 ], function(
+    Cid,
+
     PasteDoc,
-    RefreshListener
+    RefreshListener,
+    Utils
 ) {
 
     var defaultIpfsPubNodesProvider = "0xdf66019796d5214d1dad0aa671f70e1e079aee10";
@@ -47,22 +53,54 @@ define([
 
     var addFiveAndGo = function(vnode) {
 
+        var tmpCid = new Cid(vnode.state.cid);
+
         var candidates = [];
         for (var a = 0; a < vnode.state.openNodes.length; a++) {
-            var key = vnode.state.openNodes[a].h;
-            if (key == null)
-                key = vnode.state.openNodes[a].i;
+            var key = vnode.state.openNodes[a].a;
 
             vnode.state.openNodes[a].key = key;
 
             if (vnode.state.scannedNodesIndex.hasOwnProperty(key) == true)
                 continue;
 
+            if (tmpCid.codec == 'dag-cbor') {
+              if (vnode.state.openNodes[a].hasOwnProperty('i') == false) {
+                continue;
+              }
+            }
+
             if (vnode.state.useCorsProxy == false) {
-                if (window.location.protocol == 'https:' && vnode.state.openNodes[a].hasOwnProperty('i'))
-                    continue;
-                if (vnode.state.openNodes[a].hasOwnProperty('a') == false)
-                    continue;
+
+              if (tmpCid.codec == 'dag-cbor') {
+                if (vnode.state.openNodes[a].hasOwnProperty('x') == false) {
+                  continue;
+                }
+              }
+
+              // ignore peers with CorsIssues
+              if (vnode.state.openNodes[a].hasOwnProperty('o')) {
+                continue;
+              }
+              // ignore peers with RedirectIssue
+              if (vnode.state.openNodes[a].hasOwnProperty('r')) {
+                continue;
+              }
+              if (window.location.protocol == 'https:') {
+                if (vnode.state.openNodes[a].hasOwnProperty('s') == false || Utils.is_IP(vnode.state.openNodes[a].a)) {
+                  console.log('skipping ' + vnode.state.openNodes[a].a)
+                  continue;
+                }
+              }
+              //if (vnode.state.openNodes[a].hasOwnProperty('i') == false)
+              //    continue;
+            }
+
+            if (vnode.state.openNodes[a].hasOwnProperty('s') &&
+                vnode.state.openNodes[a].hasOwnProperty('p') == false &&
+                vnode.state.openNodes[a].hasOwnProperty('t') == false &&
+                Utils.is_IP(vnode.state.openNodes[a].a)) {
+                  continue;
             }
 
             candidates.push(vnode.state.openNodes[a]);
@@ -85,10 +123,15 @@ define([
             let idx = randomIntFromInterval(0, candidates.length - 1);
             var nodeToCheck = candidates[idx];
             let key = nodeToCheck.key;
-            if (nodeToCheck.hasOwnProperty('h'))
-                nodeToCheck.url = "https://" + nodeToCheck.h;
-            else
-                nodeToCheck.url = "http://" + nodeToCheck.i + ":8080";
+            if (nodeToCheck.hasOwnProperty('s') && Utils.is_IP(nodeToCheck.a) == false) {
+                nodeToCheck.url = "https://" + nodeToCheck.a;
+            } else if (nodeToCheck.hasOwnProperty('p')) {
+                nodeToCheck.url = "http://" + nodeToCheck.a;
+            } else if (nodeToCheck.hasOwnProperty('t')) {
+                nodeToCheck.url = "http://" + nodeToCheck.a + ":8080";
+            } else {
+              console.log('uh oh')
+            }
 
             vnode.state.scannedNodesIndex[nodeToCheck.key] = nodeToCheck;
             vnode.state.scannedNodesSequence.unshift(nodeToCheck.key);
@@ -117,15 +160,19 @@ define([
         node.state = 'checking';
         m.redraw();
 
+        var tmpCid = new Cid(vnode.state.cid);
+        var path;
+        if (tmpCid.codec == 'dag-cbor') {
+          path = "/api/v0/dag/get?arg=" + vnode.state.cid;
+        } else {
+          path = "/ipfs/" + vnode.state.cid;
+        }
+
         var url;
         if (vnode.state.useCorsProxy) {
-            var path = "/ipfs/";
-            if (node.po)
-                path = node.po;
-            url = "https://cors-anywhere.herokuapp.com/" + node.url + path + vnode.state.cid;
+            url = "https://cors-anywhere.herokuapp.com/" + node.url + path;
         } else {
-            //url = node.url + "/ipfs/" + cid;
-            url = node.url + "/api/v0/dag/get?arg=" + vnode.state.cid;
+            url = node.url + path;
         }
 
         m.request({
@@ -138,12 +185,19 @@ define([
             }
         })
         .then(function(response){
-            //console.log(response)
+          //console.log(response)
+          //if (response.startsWith('{"data":')) {
+          if (response.startsWith('See /corsdemo for more info') || response.indexOf("has sent too many requests.") >= 0 || response.startsWith("403") || response.startsWith("404")) {
+            node.state = 'fail';
+          } else if (response.length > 0) {
             node.state = 'success'
-            m.redraw();
+          } else {
+            node.state = 'fail'
+          }
+          m.redraw();
         })
         .catch(function(err) {
-            //console.log(err)
+            console.log(err)
             if (err.message.indexOf("unknown node type") >= 0 ||
                 err.message.indexOf("unrecognized node type") >= 0) {
                 node.state = 'success'
@@ -174,7 +228,7 @@ define([
             vnode.state.scannedNodesSequence = [];
             vnode.state.ipsLoaded = null;
             vnode.state.goBtnDisabled = false;
-            vnode.state.useCorsProxy = true;
+            vnode.state.useCorsProxy = false;
             vnode.state.cid = "";
             vnode.state.openNodes = [];
 

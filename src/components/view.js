@@ -8,7 +8,8 @@ define([
    'components/timestampcycler',
 
    'gx/ethereum-blockies/blockies.min',
-   'gx/js-cid/cids.min'
+   'gx/js-cid/cids.min',
+   'gx/buffer.js/buffer'
 ], function(
     SigVerify,
     PasteDoc,
@@ -17,7 +18,8 @@ define([
     TimestampCycler,
 
     MakeBlockies,
-    Cids
+    Cids,
+    Bufferjs
 ) {
 
     var doQuery = function(vnode) {
@@ -125,6 +127,47 @@ define([
         vnode.state.isFollowing = libwip2p.Following.isFollowing(vnode.state.account);
     }
 
+    var onManualUploadToIpfs = function(vnode, e) {
+        e.preventDefault();
+
+        var bCbor = Bufferjs.Buffer.from(vnode.state.result.cborData[0], 'base64');
+
+        new Promise(function(resolve, reject) {
+            var boundary = '----IPFSUPLOADBOUNDARY' + (Math.random() * 100000) + '.' + (Math.random() * 100000);
+            var payload = buffer.Buffer.concat([
+                buffer.Buffer.from('--' + boundary + "\r\nContent-Disposition: form-data; name=\"path\"\r\nContent-Type: application/octet-stream\r\n\r\n", 'utf8'),
+                bCbor,
+                buffer.Buffer.from("\r\n--" + boundary + "--")
+            ]);
+
+            var oReq = new XMLHttpRequest();
+            oReq.open("POST", window.preferedIpfsApi + "/api/v0/block/put?format=cbor", true);
+
+            oReq.onload = function (oEvent) {
+                resolve(JSON.parse(oReq.response));
+            }
+
+            oReq.onerror = function(err) {
+                reject(new Error("Could not communicate with IPFS node @ " + window.preferedIpfsApi));
+            }
+
+            oReq.setRequestHeader('Content-Type', "multipart/form-data; boundary=" + boundary);
+            oReq.send(payload);
+        })
+        .then(function(response){
+            if (response.Key == vnode.state.cid) {
+                $.growl.notice({message: "Content successfully added to IPFS"})
+            } else {
+                $.growl.error({message: "Uploaded CID does not match our CID?"})
+                console.error(response);
+            }
+        })
+        .catch(function(err){
+            $.growl.error({message: "Add to IPFS failed"})
+            console.error(err);
+        })
+    }
+
     return {
 
         onupdate: function(vnode) {
@@ -199,7 +242,7 @@ define([
                 m("div.dropdown", {style:'word-wrap:break-word;'},
                     "Cid: ", vnode.state.cidLink,
                     m("div.dropdown-menu",
-                        //m("a.dropdown-item", {href:"#", onclick: onManualUploadToIpfs.bind(null, vnode)}, m("i.fas fa-upload"), " Upload to IPFS"),
+                        m("a.dropdown-item", {href:"#", onclick: onManualUploadToIpfs.bind(null, vnode)}, m("i.fas fa-upload"), " Upload to IPFS"),
                         m("a.dropdown-item", {target:"_blank", href:window.preferedIpfsGateway + '/api/v0/dag/get?arg=' + vnode.state.cid}, m("i.fas fa-binoculars"), " View IPFS content"),
                         m(m.route.Link, {class:"dropdown-item", href:"/ipfscheck/" + vnode.state.cid}, m("i.fas fa-globe"), " IPFS Dist. Checker"),
                         m(m.route.Link, {class:"dropdown-item", href:"/ipldview/" + vnode.state.cid}, m("i.fas fa-project-diagram"), " IPLD Viewer")
