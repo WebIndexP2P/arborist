@@ -24,8 +24,8 @@ define([
     'components/livechat',
     'components/importbundle',
     'components/latestpastes',
-    'components/goyacy'
-
+    'components/goyacy',
+    'components/importcar'
 ], function(
     MithrilNav,
     Version,
@@ -50,7 +50,8 @@ define([
     PageLiveChat,
     PageImportBundle,
     PageLatestPastes,
-    PageGoYacy
+    PageGoYacy,
+    PageImportCar
 ){
 
     MithrilNav.overrideMithrilRouting();
@@ -58,6 +59,7 @@ define([
 
     var libwip2p = window.libwip2p;
     window.Buffer = window.buffer.Buffer;
+    window.libipfs = libipfs;
 
     libwip2p.useLocalStorage(true);
 
@@ -193,6 +195,9 @@ define([
           }},
           "/goyacy": {render: function() {
               return m(PageLayout, {}, m(PageGoYacy))
+          }},
+          "/importcar": {render: function() {
+              return m(PageLayout, {}, m(PageImportCar))
           }}
       })
 

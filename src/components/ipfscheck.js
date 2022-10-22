@@ -64,6 +64,7 @@ define([
             if (vnode.state.scannedNodesIndex.hasOwnProperty(key) == true)
                 continue;
 
+            // check the node supports API
             if (tmpCid.codec == 'dag-cbor') {
               if (vnode.state.openNodes[a].hasOwnProperty('i') == false) {
                 continue;
@@ -74,6 +75,10 @@ define([
 
               if (tmpCid.codec == 'dag-cbor') {
                 if (vnode.state.openNodes[a].hasOwnProperty('x') == false) {
+                  continue;
+                }
+              } else {
+                if (vnode.state.openNodes[a].hasOwnProperty('c') == false) {
                   continue;
                 }
               }

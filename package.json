@@ -2,27 +2,23 @@
   "author": "",
   "bugs": {},
   "dependencies": {
-    "bootstrap": "^4.6.0",
-    "ethers": "^5.5.1",
+    "bootstrap": "^4.6.2",
+    "ethers": "^5.7.1",
+    "mithril": "^2.2.2",
+    "requirejs": "^2.3.6",
     "tweetnacl": "^1.0.3"
   },
   "description": "",
   "devDependencies": {
     "mv": "^2.1.1",
     "ncp": "^2.0.0",
-    "requirejs": "^2.3.6",
-    "uglify-es": "^3.3.9"
+    "uglify-js": "^3.13.0"
   },
   "gxDependencies": [
     {
       "hash": "QmdhnztmcS1eCQmcKUABgxKvjrYGQkLA8AswCjTHSohw5n",
       "name": "jQuery",
       "version": "3.3.1"
-    },
-    {
-      "hash": "QmQTK2rqcEQcRSMTB6hcPfw3C9r6je8hMTVvwFLwot4rrj",
-      "name": "requirejs",
-      "version": "2.3.5"
     },
     {
       "hash": "QmeroswPUaBeKFEvMpjbejruGvWBJszSpbmWFgooyQGGKQ",
@@ -33,11 +29,6 @@
       "hash": "QmSBEFqR4udFheAUp1fJ1cWZ9qbr9qs3SDLhuZtWK9SUMt",
       "name": "ethereum-blockies",
       "version": "1.0.2"
-    },
-    {
-      "hash": "QmaynMPrtLkMLKAFJerGa7EtHQvGWk545gHwQvy2Fp76DW",
-      "name": "popper.js",
-      "version": "1.12.9"
     },
     {
       "hash": "QmUbcqXejkwsHxbxeaFcRUnGG7VYtqs94VVqbf2W1JgLCx",
@@ -70,14 +61,14 @@
       "version": "0.1.15"
     },
     {
-      "hash": "QmTPpGj9uUrPrzkfs5skfWuooaYaSv31DqivSHTsBHhJ4f",
+      "hash": "QmVqHdsGxqFkT1FVgD3gmquQ3dtuyztHmbfSuVTHi9gAq4",
       "name": "wip2p-settings",
-      "version": "0.1.1"
+      "version": "0.1.2"
     },
     {
-      "hash": "QmWo39oHHFDwQNwrj2PkafPZW9WG7cRDFfQExRezDwg6N7",
-      "name": "mithril.js",
-      "version": "2.0.4-routefix-r2"
+      "hash": "QmQF4NV3sSPm7cjMYms4xDgoLwqMXrcz8YyMcdw1N4mKbb",
+      "name": "libipfs",
+      "version": "1.0.1"
     }
   ],
   "gxVersion": "0.14.0",
@@ -92,5 +83,5 @@
     "web": "devserver -r src -b 0.0.0.0:7000 -include gx/libwip2p:../libwip2p/dist",
     "web-build": "devserver -r build -b 0.0.0.0:7000 --nogx --api http://127.0.0.1:9000"
   },
-  "version": "0.8.10"
+  "version": "0.8.12"
 }

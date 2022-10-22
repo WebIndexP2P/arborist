@@ -43,14 +43,29 @@ define([
           else
               bCbor = Bufferjs.Buffer.from(byteData, 'base64');
 
-          var pasteDoc = IpldCbor.util.deserialize(bCbor);
-          
-          decodeSpecials(pasteDoc);
+          let pasteDoc = null;
+          try {
+            pasteDoc = libipfs.dagCbor.decode(bCbor);
+          } catch(err) {
+            pasteDoc = libipfs.dagPB.decode(bCbor);
+          }
+
+          if (pasteDoc == null) {
+            pasteDoc = bCbor
+          }
+
+          if (Buffer.isBuffer(pasteDoc)) {
+            pasteDoc = '0x' + pasteDoc.toString('hex');
+          } else {
+            decodeSpecials(pasteDoc);
+          }
+
           resolve(pasteDoc);
       })
     }
 
     var decodeSpecials = function(obj) {
+
         for (var key in obj) {
             if (obj[key] == null) { // do nothing
               obj[key] = null;
@@ -63,6 +78,7 @@ define([
                 decodeSpecials(obj[key]);
             }
         }
+
     }
 
     var getCid = function(data) {

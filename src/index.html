@@ -68,9 +68,8 @@
             "gx/jquery-growl/css/jquery.growl.css",
 
             "gx/jQuery/jquery-{ver}.min.js",
-            "gx/popper.js/popper.min.js",
-            "npm/bootstrap/dist/js/bootstrap.min.js",
-            "gx/mithril.js/mithril.min.js",
+            "npm/bootstrap/dist/js/bootstrap.bundle.min.js",
+            "npm/mithril/mithril.min.js",
             "gx/jquery-growl/js/jquery.growl.js",
             "npm/tweetnacl/nacl.min.js",
             "gx/buffer.js/buffer.js",
@@ -78,7 +77,8 @@
             "npm/ethers/dist/ethers.umd.min.js",
             "gx/js-ipld-cbor-native-sha256/ipldcbor.min.js",
             "gx/libwip2p/libwip2p.js",
-            "gx/requirejs/require.js",
+            "gx/libipfs/libipfs.min.js",
+            "npm/requirejs/require.js",
 
             //<!--{REPLACEWITH_APPBUNDLE}-->
         ]
@@ -92,6 +92,9 @@
             var assetIndex = 0;
 
             var onAssetsComplete = function() {
+                requirejs.config({
+                  waitSeconds: 120
+                })
                 requirejs(['index'], function(Index) {})
             }
             var onLoadComplete = function(location) {

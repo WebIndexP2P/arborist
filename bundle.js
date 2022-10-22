@@ -24,7 +24,7 @@ var filesToCopy = [
 
     // GX deps
     {type:"file", src: "/node_modules/bootstrap/dist/css/bootstrap.min.css", dst:"/npm/bootstrap/dist/css/bootstrap.min.css"},
-    {type:"file", src: "/node_modules/bootstrap/dist/js/bootstrap.min.js", dst:"/npm/bootstrap/dist/js/bootstrap.min.js"},
+    {type:"file", src: "/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js", dst:"/npm/bootstrap/dist/js/bootstrap.bundle.min.js"},
 
     {type:"file", src: "/gx/Font.Awesome/css/fontawesome.min.css"},
     {type:"file", src: "/gx/Font.Awesome/css/solid.min.css"},
@@ -35,13 +35,11 @@ var filesToCopy = [
 
     {type:"file", src: "/gx/jQuery/jquery-{ver}.min.js"},
 
-    {type:"file", src: "/gx/popper.js/popper.min.js"},
-
-    {type:"file", src: "/gx/mithril.js/mithril.min.js"},
+    {type:"file", src: "/node_modules/mithril/mithril.min.js", dst:"/npm/mithril/mithril.min.js"},
 
     {type:"file", src: "/node_modules/ethers/dist/ethers.umd.min.js", dst:"/npm/ethers/dist/ethers.umd.min.js"},
 
-    {type:"file", src: "/gx/requirejs/require.js"},
+    {type:"file", src: "/node_modules/requirejs/require.js", dst:"/npm/requirejs/require.js"},
 
     {type:"file", src: "/gx/ethereum-blockies/blockies.min.js"},
 
@@ -53,7 +51,9 @@ var filesToCopy = [
 
     {type:"file", src: "/node_modules/tweetnacl/nacl.min.js", dst:"/npm/tweetnacl/nacl.min.js"},
 
-    {type:"file", src: "/gx/libwip2p/libwip2p.js"}
+    {type:"file", src: "/gx/libwip2p/libwip2p.js"},
+
+    {type:"file", src: "/gx/libipfs/libipfs.min.js"}
 ]
 
 

@@ -10,10 +10,40 @@ define([
     PeerChangeModal
 ) {
 
+    var fixDropdowns = function() {
+      $('.dropdown-auto-adjust').on('shown.bs.dropdown', function () {
+        OffsetDropdown()
+
+        $('.dropdown-auto-adjust').on('resize.bs.dropdown', function () {
+          OffsetDropdown()
+        })
+      })
+
+      $('.dropdown-auto-adjust').on('hide.bs.dropdown', function() {
+        $('.dropdown-auto-adjust').off('resize.bs.dropdown')
+      })
+
+      var OffsetDropdown = function() {
+        var dropdown = $('.dropdown-menu-auto-adjust.show')
+
+        if (dropdown.length == 0)
+          return
+
+        var rightOffset = dropdown.offset().left + dropdown.width()
+        var browserWidth = $('body').innerWidth()
+        var neededLeftOffset = dropdown.position().left - (rightOffset - browserWidth)
+
+        if (neededLeftOffset < 0) {
+          dropdown.css({ left: neededLeftOffset - 3 })
+        } else {
+          dropdown.css({ left: 0 })
+        }
+      }
+    }
+
     return {
 
         oninit: function(vnode) {
-
             vnode.state.peerChangeHandler = function() {
               libwip2p.Following.checkAllForUpdates()
             }
@@ -41,14 +71,18 @@ define([
               PeerChangeModal.show(endpoint, origPeerId, newPeerId);
             }
             libwip2p.Peers.events.on('peeridchanged', vnode.state.onPeerIdChangedHandler);
+        },
 
+        oncreate: function(vnode) {
+          fixDropdowns();
         },
 
         ondestroy: function(vnode) {
-            libwip2p.Peers.events.off('peerconnected', vnode.state.peerChangeHandler)
-            libwip2p.Peers.events.off('authed', vnode.state.onAuthHandler);
-            libwip2p.Following.events.off('update', vnode.state.followingUpdateHandler)
-            libwip2p.Peers.events.off('peeridchanged', vnode.state.onPeerIdChangedHandler);
+          // does the header ever destroy? don't think so.
+          libwip2p.Peers.events.off('peerconnected', vnode.state.peerChangeHandler)
+          libwip2p.Peers.events.off('authed', vnode.state.onAuthHandler);
+          libwip2p.Following.events.off('update', vnode.state.followingUpdateHandler)
+          libwip2p.Peers.events.off('peeridchanged', vnode.state.onPeerIdChangedHandler);
         },
 
         view: function(vnode) {
@@ -69,13 +103,14 @@ define([
                     })(),
                     m(m.route.Link, {class:"p-2 text-dark", href:"/following"}, "Following", vnode.state.unreadCountElement),
                     m(m.route.Link, {class:"p-2 text-dark", href:"/invites"}, "Invites"),
-                    m("div.dropdown",
+                    m("div.dropdown dropdown-auto-adjust",
                         m("a.p-2 text-dark", {href:"#", 'data-toggle':'dropdown'}, "Tools",
-                            m("div.dropdown-menu dropdown-menu-left",
+                            m("div.dropdown-menu dropdown-menu-auto-adjust",
                                 m(m.route.Link, {class:"dropdown-item", href:"/ipfscheck"}, m("i.fas fa-globe"), " IPFS Dist. Checker"),
                                 m(m.route.Link, {class:"dropdown-item", href:"/importpaste"}, m("i.fas fa-file-import"), " IPFS Import"),
                                 m(m.route.Link, {class:"dropdown-item", href:"/ipldview"}, m("i.fas fa-binoculars"), " IPLD Viewer"),
                                 m(m.route.Link, {class:"dropdown-item", href:"/importbundle"}, m("i.fas fa-object-group"), " Signed Bundle Import"),
+                                m(m.route.Link, {class:"dropdown-item", href:"/importcar"}, m("i.fas fa-archive"), " Import CAR"),
                                 m("div.dropdown-divider"),
                                 m(m.route.Link, {class:"dropdown-item", href:"/enslist"}, m("i.fas fa-external-link-alt"), " ENS List"),
                                 m(m.route.Link, {class:"dropdown-item", href:"/yggdrasil"}, m("i.fas fa-sitemap"), " Yggdrasil Services"),
@@ -85,9 +120,9 @@ define([
                             )
                         )
                     ),
-                    m("div.dropdown",
+                    m("div.dropdown dropdown-auto-adjust",
                         m("a.p-2 text-dark", {href:"#", 'data-toggle':'dropdown'}, "Info",
-                            m("div.dropdown-menu dropdown-menu-left", {'aria-labelledby':'dropdown-info'},
+                            m("div.dropdown-menu dropdown-menu-auto-adjust", {'aria-labelledby':'dropdown-info'},
                                 m(m.route.Link, {class:"dropdown-item", href:"/about", oncreate:m.route.link}, m("i.fas fa-info-circle"), " About"),
                                 m(m.route.Link, {class:"dropdown-item", href:"/faq", oncreate:m.route.link}, m("i.fas fa-question-circle"), " FAQ"),
                                 m(m.route.Link, {class:"dropdown-item", href:"/api", oncreate:m.route.link}, m("i.fas fa-project-diagram"), " API")

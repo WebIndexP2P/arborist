@@ -92,6 +92,10 @@ define([
                       vnode.state.decodedData = JSON.stringify(pasteDoc, null, '   ');
                     }
                     m.redraw();
+                })
+                .catch((err)=>{
+                  vnode.state.error = err.message;
+                  m.redraw();
                 });
 
             }
