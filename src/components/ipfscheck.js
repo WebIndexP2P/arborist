@@ -253,7 +253,7 @@ define([
                 if (Array.isArray(opennodes)) {
                   vnode.state.openNodes = opennodes;
                 }
-                vnode.state.ipsLoaded = m("span.badge badge-success", {style:"float:right;"}, vnode.state.openNodes.length + " public IPFS nodes loaded");
+                vnode.state.ipsLoaded = m("span.badge bg-success", {style:"float:right;"}, vnode.state.openNodes.length + " public IPFS nodes loaded");
                 m.redraw();
             })
         },

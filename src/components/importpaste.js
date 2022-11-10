@@ -318,9 +318,7 @@ define([
                         m("label", "CID:"),
                         m("div.input-group mb-3",
                             m("input.form-control", {type:"text", value: vnode.state.cid, onkeyup: onInput.bind(null, vnode), oninput: onInput.bind(null, vnode)}),
-                            m("div.input-group-append",
-                                vnode.state.btnGoElement
-                            )
+                            vnode.state.btnGoElement
                         )
                     ),
                     vnode.state.errorMessage,
