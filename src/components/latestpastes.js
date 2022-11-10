@@ -137,11 +137,11 @@ define([
                         ),
                         function(){
                             if (byteSize > 0)
-                                return m("span.badge badge-secondary", {style:"margin-right:5px;"}, m("i.fas fa-save"), " ", byteSize, " byte", (byteSize == 1) ? "" : "s");
+                                return m("span.badge bg-secondary", {style:"margin-right:5px;"}, m("i.fas fa-save"), " ", Utils.getReadableFileSizeString(byteSize));
                             else
-                                return m("span.badge badge-secondary", {style:"margin-right:5px;"}, m("i.fas fa-save"), " Hash only");
+                                return m("span.badge bg-secondary", {style:"margin-right:5px;"}, m("i.fas fa-save"), " Hash only");
                         }(),
-                        m("span.badge badge-" + pasteBadgeColor, m("i.fas fa-paste"), " ", (pasteCount == 1) ? "First post" : pasteCount + " updates"),
+                        m("span.badge bg-" + pasteBadgeColor, m("i.fas fa-paste"), " ", (pasteCount == 1) ? "First post" : pasteCount + " updates"),
                         m("div", timeSince)
                     )
                 })

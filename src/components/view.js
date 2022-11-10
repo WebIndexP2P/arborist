@@ -7,9 +7,7 @@ define([
 
    'components/timestampcycler',
 
-   'gx/ethereum-blockies/blockies.min',
-   'gx/js-cid/cids.min',
-   'gx/buffer.js/buffer'
+   'gx/ethereum-blockies/blockies.min'
 ], function(
     SigVerify,
     PasteDoc,
@@ -17,9 +15,7 @@ define([
 
     TimestampCycler,
 
-    MakeBlockies,
-    Cids,
-    Bufferjs
+    MakeBlockies
 ) {
 
     var doQuery = function(vnode) {
@@ -66,8 +62,13 @@ define([
             vnode.state.queryInProgress = false;
 
             if (vnode.state.result.multihash) {
-              var mhashBuf = buffer.Buffer.from(vnode.state.result.multihash.substr(2), 'hex');
-              var cid = new Cids(1, 'dag-cbor', mhashBuf);
+              var mhashBuf = Buffer.from(vnode.state.result.multihash.substr(2), 'hex');
+
+              // mhashBuf comes in as CidV0, convert to V1
+              let cid = Cid.decode(mhashBuf);
+              let digest = cid.multihash;
+              cid = Cid.create(1, libipfs.dagCbor.code, digest);
+
               vnode.state.cid = cid.toString();
               vnode.state.cidLink = m("a", {"data-toggle":"dropdown", href:"#"}, vnode.state.cid);
             }
@@ -77,7 +78,7 @@ define([
 
                 PasteDoc.getCid(vnode.state.result.cborData[0])
                 .then(function(clientCalcedCid) {
-                    if (clientCalcedCid == vnode.state.cid) {
+                    if (clientCalcedCid.toString() == vnode.state.cid) {
                         vnode.state.cidVerifyCheck = m("i.fas fa-check-circle", {style:"color:green;font-size:30px;"})
                     } else {
                         vnode.state.cidVerifyCheck = m("i.fas fa-times-circle", {style:"color:red;font-size:30px;"})
@@ -94,6 +95,7 @@ define([
                     m.redraw();
                 })
                 .catch((err)=>{
+                  console.error(err)
                   vnode.state.error = err.message;
                   m.redraw();
                 });
@@ -134,14 +136,14 @@ define([
     var onManualUploadToIpfs = function(vnode, e) {
         e.preventDefault();
 
-        var bCbor = Bufferjs.Buffer.from(vnode.state.result.cborData[0], 'base64');
+        var bCbor = Buffer.from(vnode.state.result.cborData[0], 'base64');
 
         new Promise(function(resolve, reject) {
             var boundary = '----IPFSUPLOADBOUNDARY' + (Math.random() * 100000) + '.' + (Math.random() * 100000);
-            var payload = buffer.Buffer.concat([
-                buffer.Buffer.from('--' + boundary + "\r\nContent-Disposition: form-data; name=\"path\"\r\nContent-Type: application/octet-stream\r\n\r\n", 'utf8'),
+            var payload = Buffer.concat([
+                Buffer.from('--' + boundary + "\r\nContent-Disposition: form-data; name=\"path\"\r\nContent-Type: application/octet-stream\r\n\r\n", 'utf8'),
                 bCbor,
-                buffer.Buffer.from("\r\n--" + boundary + "--")
+                Buffer.from("\r\n--" + boundary + "--")
             ]);
 
             var oReq = new XMLHttpRequest();
@@ -244,12 +246,12 @@ define([
                 ),
                 m("div", "Timestamp: ", m(TimestampCycler, {timestamp: vnode.state.result.timestamp})),
                 m("div.dropdown", {style:'word-wrap:break-word;'},
-                    "Cid: ", vnode.state.cidLink,
-                    m("div.dropdown-menu",
-                        m("a.dropdown-item", {href:"#", onclick: onManualUploadToIpfs.bind(null, vnode)}, m("i.fas fa-upload"), " Upload to IPFS"),
-                        m("a.dropdown-item", {target:"_blank", href:window.preferedIpfsGateway + '/api/v0/dag/get?arg=' + vnode.state.cid}, m("i.fas fa-binoculars"), " View IPFS content"),
-                        m(m.route.Link, {class:"dropdown-item", href:"/ipfscheck/" + vnode.state.cid}, m("i.fas fa-globe"), " IPFS Dist. Checker"),
-                        m(m.route.Link, {class:"dropdown-item", href:"/ipldview/" + vnode.state.cid}, m("i.fas fa-project-diagram"), " IPLD Viewer")
+                    m("span", {"data-bs-toggle":"dropdown"}, "Cid: ", vnode.state.cidLink),
+                    m("ul.dropdown-menu",
+                        m("li", m("a.dropdown-item", {href:"#", onclick: onManualUploadToIpfs.bind(null, vnode)}, m("i.fas fa-upload"), " Upload to IPFS")),
+                        m("li", m("a.dropdown-item", {target:"_blank", href:window.preferedIpfsGateway + '/api/v0/dag/get?arg=' + vnode.state.cid}, m("i.fas fa-binoculars"), " View IPFS content")),
+                        m("li", m(m.route.Link, {class:"dropdown-item", href:"/ipfscheck/" + vnode.state.cid}, m("i.fas fa-globe"), " IPFS Dist. Checker")),
+                        m("li", m(m.route.Link, {class:"dropdown-item", href:"/ipldview/" + vnode.state.cid}, m("i.fas fa-project-diagram"), " IPLD Viewer"))
                     )
                 ),
                 (function() {

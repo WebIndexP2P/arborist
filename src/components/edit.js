@@ -42,11 +42,12 @@ define([
         })
         .then(function(cid) {
             vnode.state.cid = cid.toString();
-            vnode.state.sigBundle.bMultihash = cid.multihash;
-            return libwip2p.Account.sign(timestamp, '0x' + cid.multihash.toString('hex'));
+            vnode.state.sigBundle.bMultihash = Buffer.from(cid.multihash.bytes);
+            let mhashHex = '0x' + vnode.state.sigBundle.bMultihash.toString('hex');
+            return libwip2p.Account.sign(timestamp, mhashHex);
         })
         .then(function(signature) {
-            vnode.state.sigBundle.bSignature = buffer.Buffer.from(signature.substr(2), 'hex');
+            vnode.state.sigBundle.bSignature = Buffer.from(signature.substr(2), 'hex');
             vnode.state.signature = '0x' + vnode.state.sigBundle.bSignature.toString('hex');
             vnode.state.sigBundle.timestamp = timestamp;
 
@@ -79,14 +80,14 @@ define([
 
         libwip2p.Peers.getActivePeerSession()
         .then((session)=>{
-          return session.sendMessage({method:"bundle_save", params:[{
-              account: libwip2p.Account.getWallet().address,
-              timestamp: vnode.state.sigBundle.timestamp,
-              multihash: '0x' + vnode.state.sigBundle.bMultihash.toString('hex'),
-              signature: '0x' + vnode.state.sigBundle.bSignature.toString('hex'),
-              cborData: cborData
-            }]
-          })
+          let bundle = {
+            account: libwip2p.Account.getWallet().address,
+            timestamp: vnode.state.sigBundle.timestamp,
+            multihash: '0x' + vnode.state.sigBundle.bMultihash.toString('hex'),
+            signature: '0x' + vnode.state.sigBundle.bSignature.toString('hex'),
+            cborData: cborData
+          }
+          return session.sendMessage({method:"bundle_save", params:[bundle]})
         })
         .then(function(response) {
             if (response.error) {
@@ -188,10 +189,10 @@ define([
         e.preventDefault();
         new Promise(function(resolve, reject) {
             var boundary = '----IPFSUPLOADBOUNDARY' + (Math.random() * 100000) + '.' + (Math.random() * 100000);
-            var payload = buffer.Buffer.concat([
-                buffer.Buffer.from('--' + boundary + "\r\nContent-Disposition: form-data; name=\"path\"\r\nContent-Type: application/octet-stream\r\n\r\n", 'utf8'),
+            var payload = Buffer.concat([
+                Buffer.from('--' + boundary + "\r\nContent-Disposition: form-data; name=\"path\"\r\nContent-Type: application/octet-stream\r\n\r\n", 'utf8'),
                 vnode.state.sigBundle.cborPasteDoc,
-                buffer.Buffer.from("\r\n--" + boundary + "--")
+                Buffer.from("\r\n--" + boundary + "--")
             ]);
 
             var oReq = new XMLHttpRequest();
@@ -223,17 +224,17 @@ define([
     }
 
     var renderCidAndSig = function(vnode) {
-        vnode.state.cidAndSig = m("div.alert alert-primary",
-            m("div.dropdown", m("span.badge badge-primary", "CID"), " = ", m("a", {href: "#", "data-toggle":"dropdown", style:'word-wrap:break-word;font-family:"Courier New", Courier, monospace;'}, vnode.state.cid),
-                m("div.dropdown-menu",
-                    m("a.dropdown-item", {href:"#", onclick: onManualUploadToIpfs.bind(null, vnode)}, m("i.fas fa-upload"), " Upload to IPFS"),
-                    m("a.dropdown-item", {target:"_blank", href:window.preferedIpfsGateway + '/api/v0/dag/get?arg=' + vnode.state.cid}, m("i.fas fa-binoculars"), " View IPFS content"),
-                    m("a.dropdown-item", {href:"/ipfscheck/" + vnode.state.cid, oncreate: m.route.link}, m("i.fas fa-globe"), " IPFS Dist. Checker"),
-                    m("a.dropdown-item", {href:"/ipldview/" + vnode.state.cid, oncreate: m.route.link}, m("i.fas fa-project-diagram"), " IPLD Viewer")
-                )
-            ),
-            m("div", {style:'margin-top:5px;word-wrap:break-word;font-family:"Courier New", Courier, monospace;'}, m("span.badge badge-primary", "Signature"), " = ", vnode.state.signature)
-        )
+      vnode.state.cidAndSig = m("div.alert alert-primary",
+        m("div.dropdown", m("span.badge bg-primary", "CID"), " = ", m("a", {href: "#", "data-toggle":"dropdown", style:'word-wrap:break-word;font-family:"Courier New", Courier, monospace;'}, vnode.state.cid),
+          m("div.dropdown-menu",
+            m("a.dropdown-item", {href:"#", onclick: onManualUploadToIpfs.bind(null, vnode)}, m("i.fas fa-upload"), " Upload to IPFS"),
+            m("a.dropdown-item", {target:"_blank", href:window.preferedIpfsGateway + '/api/v0/dag/get?arg=' + vnode.state.cid}, m("i.fas fa-binoculars"), " View IPFS content"),
+            m("a.dropdown-item", {href:"/ipfscheck/" + vnode.state.cid, oncreate: m.route.link}, m("i.fas fa-globe"), " IPFS Dist. Checker"),
+            m("a.dropdown-item", {href:"/ipldview/" + vnode.state.cid, oncreate: m.route.link}, m("i.fas fa-project-diagram"), " IPLD Viewer")
+          )
+        ),
+        m("div", {style:'margin-top:5px;word-wrap:break-word;font-family:"Courier New", Courier, monospace;'}, m("span.badge bg-primary", "Signature"), " = ", vnode.state.signature)
+      )
     }
 
     var renderBtnPublish = function(vnode) {
@@ -324,13 +325,13 @@ define([
             }
 
             if (accountDetails.cborData) {
-              var cborBuf = buffer.Buffer.from(accountDetails.cborData[0], 'base64');
+              var cborBuf = Buffer.from(accountDetails.cborData[0], 'base64');
               vnode.state.byteSize = cborBuf.length;
 
               return PasteDoc.deserialize(cborBuf)
               .then(function(pasteDoc){
 
-                  if (buffer.Buffer.isBuffer(pasteDoc)) {
+                  if (Buffer.isBuffer(pasteDoc)) {
                     vnode.state.msg = '0x' + pasteDoc.toString('hex');
                   } else if (typeof pasteDoc == 'string'){
                     vnode.state.msg = pasteDoc;
@@ -433,9 +434,7 @@ define([
           return [
               m("div.modal-header",
               m("h5.modal-title","Request Invite"),
-                  m("button.close", {type:"button", "data-dismiss":"modal"},
-                      m("span", m.trust("&times;"))
-                  )
+                  m("button.btn-close", {type:"button", "data-bs-dismiss":"modal"})
               ),
               m("div.modal-body",
                   m("form",
@@ -451,7 +450,7 @@ define([
                   )
               ),
               m("div.modal-footer",
-                m("button.btn btn-secondary", {type:"button", "data-dismiss":"modal"}, "Cancel"),
+                m("button.btn btn-secondary", {type:"button", "data-bs-dismiss":"modal"}, "Cancel"),
                 (function(){
                   var btns = []
                   if (showNoKey) {

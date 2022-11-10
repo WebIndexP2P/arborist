@@ -10,7 +10,7 @@ define(function(){
             vnode.state.address = e.target.value;
         }
     }
-    
+
     var onGoClick = function(vnode) {
         try {
           ethers.utils.getAddress(vnode.state.address);
@@ -34,9 +34,7 @@ define(function(){
                 m("label", vnode.state.label),
                 m("div.input-group mb-3",
                     m("input.form-control", {type:"text", value: vnode.state.address, onkeyup: onInput.bind(null, vnode), oninput: onInput.bind(null, vnode)}),
-                    m("div.input-group-append",
-                        m("button.btn btn-outline-primary", {onclick: onGoClick.bind(null, vnode)}, "Go")
-                    )
+                    m("button.btn btn-outline-primary", {onclick: onGoClick.bind(null, vnode)}, "Go")
                 ),
                 vnode.state.errorMessage
             )

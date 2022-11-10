@@ -8,6 +8,6 @@
       "gx/js-ipld-cbor-native-sha256": "empty:",
       "gx/js-cid": "empty:",
       "gx/buffer.js": "empty:",
-      "gx/wip2p-settings": "../vendor/gx/ipfs/QmVqHdsGxqFkT1FVgD3gmquQ3dtuyztHmbfSuVTHi9gAq4/wip2p-settings"
+      "gx/wip2p-settings": "../vendor/gx/ipfs/QmdC4zKz9p4zxjUta2BELd6rPPJKLdPwqerH24p9NkSpsJ/wip2p-settings"
     }
 })

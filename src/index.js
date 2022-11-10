@@ -58,8 +58,8 @@ define([
     MithrilNav.restoreScrollPositions();
 
     var libwip2p = window.libwip2p;
-    window.Buffer = window.buffer.Buffer;
-    window.libipfs = libipfs;
+    window.Buffer = libipfs.buffer.Buffer;
+    window.Cid = libipfs.multiformats.CID;
 
     libwip2p.useLocalStorage(true);
 
@@ -107,6 +107,18 @@ define([
       else
         window.logAppEvents = false;
 
+      let settingsComponent = {view: (vnode)=> m(
+        PageSettings, {
+          name:"Arborist",
+          version: "v" + Version,
+          description: m("span", " is the default UI for interacting with WebIndexP2P tree's. It's primary focus is to provide users with an easy to use interface for managing their data, especially where certain dapps may restrict what sort of changes a user can make to their data bundle, Arborist has no restrictions.",
+            m("p", {style:"margin-top:20px;"}, "If you'd like to financially support the project, head over to the ", m(m.route.Link, {href:"/donate"}, "donate"), " page to see if there is an option you'd be interested in.")
+          ),
+          icon:"assets/arborist.svg",
+          startTab: vnode.attrs.startTab
+        }
+      )}
+
       var a = document.getElementById('app');
       m.route(a, "/", {
           "/": {render: function() {
@@ -122,8 +134,7 @@ define([
               return m(PageLayout, {}, m(PageAPI))
           }},
           "/about": {render: function() {
-            m.route.set("/settings?tab=about");
-              //return m(PageLayout, {}, m(PageAbout))
+              return m(PageLayout, {}, m(settingsComponent, {startTab: "about"}));
           }},
           "/faq": {render: function() {
               return m(PageLayout, {}, m(PageFAQ))
@@ -131,18 +142,8 @@ define([
           "/donate": {render: function() {
               return m(PageLayout, {}, m(PageDonate))
           }},
-          "/peers": {render: function() {
-              return m(PageLayout, {}, m(PagePeers))
-          }},
           "/settings": {render: function() {
-              return m(PageLayout, {}, m(PageSettings, {
-                name:"Arborist",
-                version: "v" + Version,
-                description: m("span", " is the default UI for interacting with WebIndexP2P tree's. It's primary focus is to provide users with an easy to use interface for managing their data, especially where certain dapps may restrict what sort of changes a user can make to their data bundle, Arborist has no restrictions.",
-                  m("p", {style:"margin-top:20px;"}, "If you'd like to financially support the project, head over to the ", m(m.route.Link, {href:"/donate"}, "donate"), " page to see if there is an option you'd be interested in.")
-                ),
-                icon:"assets/arborist.svg"
-              }))
+              return m(PageLayout, {}, m(settingsComponent));
           }},
           "/following": {render: function() {
               return m(PageLayout, {}, m(PageFollowing))
@@ -184,8 +185,7 @@ define([
               return m(PageLayout, {}, m(PageImportBundle))
           }},
           "/invites": {render: function() {
-            m.route.set("/settings?tab=invites")
-              //return m(PageLayout, {}, m(PageInvites))
+            return m(PageLayout, {}, m(settingsComponent, {startTab: "invites"}));
           }},
           "/invites/:account": {render: function() {
               return m(PageLayout, {}, m(PageInvites))

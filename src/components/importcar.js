@@ -101,13 +101,8 @@ define(function() {
           m("div.form",
 
             m("div.input-group mt-5 mb-3",
-              m("div.custom-file",
-                m("input.custom-file-input", {type:"file", id:"inputCarFile"}),
-                m("label.custom-file-label", vnode.state.fileChooserLabel)
-              ),
-              m("div.input-group-append",
+                m("input.form-control", {type:"file", id:"inputCarFile"}),
                 m("button.btn btn-outline-primary", {onclick: onPublish.bind(null, vnode)}, "Publish")
-              )
             )
 
           ),

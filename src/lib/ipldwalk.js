@@ -65,15 +65,17 @@ define([
 
             var isDagCbor = false;
             try {
-                var tmpCid = new Cids(cid);
-                if (tmpCid.codec == 'dag-cbor')
+                var tmpCid = Cid.parse(cid);
+                if (tmpCid.code == libipfs.dagCbor.code)
                     isDagCbor = true;
             } catch(err) {
                 console.log(err)
             }
 
-            if (isDagCbor)
-                return IpldDagCbor.util.deserialize(buf);
+            if (isDagCbor) {
+              let d = libipfs.dagCbor.decode(buf);
+              return d
+            }
         })
         .then(function(cborDoc){
             if (cborDoc != null)
@@ -140,7 +142,7 @@ define([
                 newPath = prop;
             else
                 newPath = path + "/" + prop;
-            if (obj[prop].constructor.name == 'CID') {
+            if (obj[prop].hasOwnProperty('asCID')) {
                 links.push({
                     path: newPath,
                     cid: obj[prop].toString(),
@@ -167,7 +169,7 @@ define([
     var recurseConvertLinks = function(obj) {
         var newObj = {}
         for (var prop in obj) {
-            if (obj[prop].constructor.name == 'CID') {
+            if (obj[prop].hasOwnProperty('asCID')) {
                 newObj[prop] = obj[prop].toString();
             } else if (typeof obj[prop] == 'object') {
                 newObj[prop] = recurseConvertLinks(obj[prop]);
@@ -218,7 +220,7 @@ define([
                   return;
               }
 
-              var buf = buffer.Buffer.from(response.result.substr(2), 'hex');
+              var buf = Buffer.from(response.result.substr(2), 'hex');
               resolve(buf);
           })
         })

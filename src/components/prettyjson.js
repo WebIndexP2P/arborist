@@ -1,10 +1,6 @@
 'use strict';
 
-define([
-   'gx/buffer.js/buffer'
-], function(
-    Buffer
-){
+define(()=>{
 
     var recurseConvertObj = function(vnode, obj, depth, parentProp) {
 
@@ -15,7 +11,7 @@ define([
 
         if (obj == null) {
             renderedProps = m("span.json-value", "null")
-        } else if (Buffer.Buffer.isBuffer(obj) == true) {
+        } else if (Buffer.isBuffer(obj) == true) {
             renderedProps.push(m("pre", '0x', obj.toString('hex')));
         } else if (Array.isArray(obj) == true) {
             renderedProps.push(m("span.json-key", "["));
@@ -26,7 +22,7 @@ define([
                 renderedProps.push(m("div", {style:"margin-left:" + (depth * 10).toString() + "px"}, recurseConvertObj(vnode, obj[prop], depth + 1, prop), comma));
             }
             renderedProps.push(m("div.json-key", "]"));
-        } else if (obj.constructor.name == 'CID') {
+        } else if (obj.hasOwnProperty('asCID')) {
             renderedProps = m("a", {href:"#", onclick: vnode.attrs.onLinkClick.bind(null, parentProp, obj.toString()), style:'font-family:"Courier New", Courier, monospace;word-wrap:break-word;'}, obj.toString());
         } else if (typeof obj == 'object') {
             renderedProps.push(m("span.json-key", " {"));

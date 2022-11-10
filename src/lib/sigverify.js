@@ -1,10 +1,6 @@
 'use strict';
 
-define([
-  'gx/buffer.js/buffer'
-], function(
-  Bufferjs
-) {
+define(()=>{
 
     var verify = function(account, timestamp, multihash, signature) {
 

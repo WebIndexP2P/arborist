@@ -1,14 +1,12 @@
 'use strict';
 
 define([
-    'gx/js-cid/cids.min',
     'lib/pastedoc',
     'lib/refreshlistener',
     'lib/ipldwalk',
     'components/limits',
     'components/importtreeview'
 ], function(
-    Cid,
     PasteDoc,
     RefreshListener,
     IpldWalk,

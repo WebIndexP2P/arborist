@@ -1,12 +1,10 @@
 'use strict';
 
 define([
-    'gx/js-cid/cids.min',
     'lib/ipldwalk',
     'components/ipldbreadcrumbs',
     'components/prettyjson'
 ], function(
-    Cid,
     IpldWalk,
     IpldBreadcrumbs,
     PrettyJson
@@ -23,7 +21,7 @@ define([
 
         var tmpCid;
         try {
-            tmpCid = new Cid(vnode.state.cid);
+            tmpCid = Cid.parse(vnode.state.cid);
         } catch(err) {
             vnode.state.errorMessage = m("div.alert alert-danger", "Invalid CID")
             vnode.state.btnGoEnabled = true;
@@ -142,13 +140,11 @@ define([
                     m("div.form-group",
                         m("div",
                             m("label", "CID:"),
-                            m("div.float-right", m("a", {href:"#", onclick: onTryMerkleHeadClick.bind(null, vnode)}, "try merklehead"))
+                            m("div.float-end", m("a", {href:"#", onclick: onTryMerkleHeadClick.bind(null, vnode)}, "try merklehead"))
                         ),
                         m("div.input-group mb-3",
                             m("input.form-control", {type:"text", value: vnode.state.cid, onkeyup: onInput.bind(null, vnode), oninput: onInput.bind(null, vnode)}),
-                            m("div.input-group-append",
-                                vnode.state.btnGoElement
-                            )
+                            vnode.state.btnGoElement
                         )
                     ),
                     vnode.state.errorMessage,

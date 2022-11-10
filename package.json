@@ -2,8 +2,8 @@
   "author": "",
   "bugs": {},
   "dependencies": {
-    "bootstrap": "^4.6.2",
-    "ethers": "^5.7.1",
+    "bootstrap": "^5.2.2",
+    "ethers": "^5.7.2",
     "mithril": "^2.2.2",
     "requirejs": "^2.3.6",
     "tweetnacl": "^1.0.3"
@@ -36,34 +36,19 @@
       "version": "5.9.0"
     },
     {
-      "hash": "QmTF5i9HuEjyY2Lqsrxat7fB892vjCvZNBTE6Y15FgSo4Q",
-      "name": "js-cid",
-      "version": "0.7.1"
-    },
-    {
       "hash": "QmYFUv8rTCACiptQcWChh6Mecg6dhcWnV5c5ye52zkmAhK",
       "name": "ipfs-http-client-lite",
       "version": "0.3.0"
     },
     {
-      "hash": "QmbntVUYWifWC8pTBon98uvPpdvzf3Zyf7wfU43eSBSmjc",
-      "name": "js-ipld-cbor-native-sha256",
-      "version": "0.15.0-git-e2ec84f"
-    },
-    {
-      "hash": "QmS3BYgAVgvJ4R8A7894D36d7jtm3fj4t57s7SC998wSWB",
-      "name": "buffer.js",
-      "version": "5.4.0"
-    },
-    {
-      "hash": "QmQL31FCm6mkZuCd7fvyaPqnVDKwemKKnoipd7bb5p6dQc",
+      "hash": "QmRVeioew7NfqCrQ72oetE2vcXPW9Fp7vRCDcwaMk4Biko",
       "name": "libwip2p",
-      "version": "0.1.15"
+      "version": "0.2.4"
     },
     {
-      "hash": "QmVqHdsGxqFkT1FVgD3gmquQ3dtuyztHmbfSuVTHi9gAq4",
+      "hash": "QmdC4zKz9p4zxjUta2BELd6rPPJKLdPwqerH24p9NkSpsJ",
       "name": "wip2p-settings",
-      "version": "0.1.2"
+      "version": "0.1.9"
     },
     {
       "hash": "QmQF4NV3sSPm7cjMYms4xDgoLwqMXrcz8YyMcdw1N4mKbb",
@@ -79,9 +64,10 @@
     "build": "node bundle.js",
     "clean": "rimraf build/",
     "publish": "ipfs add build -r",
+    "car": "../go-car/cmd/car/car c -o arborist.car build/*",
     "test": "echo \"Error: no test specified\" && exit 1",
     "web": "devserver -r src -b 0.0.0.0:7000 -include gx/libwip2p:../libwip2p/dist",
-    "web-build": "devserver -r build -b 0.0.0.0:7000 --nogx --api http://127.0.0.1:9000"
+    "web-build": "devserver -r build -b 0.0.0.0:7000 --nogx"
   },
-  "version": "0.8.12"
+  "version": "0.8.13"
 }

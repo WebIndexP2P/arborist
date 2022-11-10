@@ -18,9 +18,7 @@ define([
             return [
                 m("div.modal-header",
                 m("h5.modal-title","Follow account"),
-                    m("button.close", {type:"button", "data-dismiss":"modal"},
-                        m("span", m.trust("&times;"))
-                    )
+                    m("button.btn-close", {type:"button", "data-bs-dismiss":"modal"})
                 ),
                 m("div.modal-body",
                     m("form",
@@ -32,7 +30,7 @@ define([
                 ),
                 m("div.modal-footer",
                     m("button.btn btn-primary", {type:"button", onclick: addFollower.bind(null, vnode)}, "Add"),
-                    m("button.btn btn-secondary", {type:"button", "data-dismiss":"modal"},"Cancel")
+                    m("button.btn btn-secondary", {type:"button", "data-bs-dismiss":"modal"},"Cancel")
                 )
             ]
         }}

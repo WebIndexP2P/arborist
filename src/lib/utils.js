@@ -64,10 +64,25 @@ define(function(){
       return (false)
     }
 
+    var getReadableFileSizeString = function(fileSizeInBytes) {
+      if (fileSizeInBytes < 1024) {
+        return  fileSizeInBytes + " bytes";
+      }
+      var i = -1;
+      var byteUnits = [' kB', ' MB', ' GB', ' TB', 'PB', 'EB', 'ZB', 'YB'];
+      do {
+        fileSizeInBytes /= 1024;
+        i++;
+      } while (fileSizeInBytes > 1024);
+
+      return Math.max(fileSizeInBytes, 0.1).toFixed(1) + byteUnits[i];
+    }
+
     return {
         secondsToHuman: secondsToHuman,
         prettyPrint: prettyPrint,
         dateSimpleFormat: dateSimpleFormat,
-        is_IP: is_IP
+        is_IP: is_IP,
+        getReadableFileSizeString: getReadableFileSizeString
     }
 })

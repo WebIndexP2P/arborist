@@ -55,10 +55,12 @@ define(function() {
         m("div.row", {style:"margin-bottom:20px;"},
           m("div.col-12", {style:"text-align:center;"},
             m("h5", "Search via public Yacy nodes"),
-            m("div.input-group mb-3 col-12 col-md-9 col-lg-7 offset-md-2 offset-lg-3",
-              m("input.form-control", {type:"text", id:"searchBox"}),
-              m("div.input-group-append",
-                m("button.btn btn-outline-secondary", {onclick: doSearch.bind(null, vnode)}, "Search")
+            m("div.row",
+              m("div.col-12 col-md-9 col-lg-7 offset-md-2 offset-lg-3",
+                m("div.input-group mb-3",
+                  m("input.form-control", {type:"text", id:"searchBox"}),
+                  m("button.btn btn-outline-secondary", {onclick: doSearch.bind(null, vnode)}, "Search")
+                )
               )
             ),
             (function(){

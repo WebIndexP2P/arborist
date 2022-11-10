@@ -100,9 +100,7 @@ define([
         return [
             m("div.modal-header",
             m("h5.modal-title","Add ygg service to index"),
-            m("button.close", {type:"button", "data-dismiss":"modal"},
-                m("span", m.trust("&times;"))
-            )
+              m("button.btn-close", {type:"button", "data-bs-dismiss":"modal"})
             ),
             m("div.modal-body",
                 m("form",
@@ -121,7 +119,7 @@ define([
                 )
             ),
             m("div.modal-footer",
-              m("button.btn btn-secondary", {type:"button", "data-dismiss":"modal"},"Cancel"),
+              m("button.btn btn-secondary", {type:"button", "data-bs-dismiss":"modal"},"Cancel"),
               m("button.btn btn-primary", {type:"button", onclick: addSite},"Add")
             )
         ]

@@ -43,12 +43,6 @@ var filesToCopy = [
 
     {type:"file", src: "/gx/ethereum-blockies/blockies.min.js"},
 
-    {type:"file", src: "/gx/js-ipld-cbor-native-sha256/ipldcbor.min.js"},
-
-    {type:"file", src: "/gx/js-cid/cids.min.js"},
-
-    {type:"file", src: "/gx/buffer.js/buffer.js"},
-
     {type:"file", src: "/node_modules/tweetnacl/nacl.min.js", dst:"/npm/tweetnacl/nacl.min.js"},
 
     {type:"file", src: "/gx/libwip2p/libwip2p.js"},

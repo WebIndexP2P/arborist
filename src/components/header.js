@@ -10,40 +10,47 @@ define([
     PeerChangeModal
 ) {
 
-    var fixDropdowns = function() {
-      $('.dropdown-auto-adjust').on('shown.bs.dropdown', function () {
-        OffsetDropdown()
 
-        $('.dropdown-auto-adjust').on('resize.bs.dropdown', function () {
-          OffsetDropdown()
-        })
-      })
+    var OffsetDropdown = function() {
+      var dropdown = $('.dropdown-menu-auto-adjust.show')
 
-      $('.dropdown-auto-adjust').on('hide.bs.dropdown', function() {
-        $('.dropdown-auto-adjust').off('resize.bs.dropdown')
-      })
+      if (dropdown.length == 0)
+        return
 
-      var OffsetDropdown = function() {
-        var dropdown = $('.dropdown-menu-auto-adjust.show')
+      var rightOffset = dropdown.offset().left + dropdown.width()
+      var browserWidth = $('body').innerWidth()
+      var neededLeftOffset = dropdown.position().left - (rightOffset - browserWidth)
 
-        if (dropdown.length == 0)
-          return
+      if (neededLeftOffset < 0) {
+        dropdown.css({ left: neededLeftOffset - 10 })
+      } else {
+        dropdown.css({ left: 0 })
+      }
+    }
 
-        var rightOffset = dropdown.offset().left + dropdown.width()
-        var browserWidth = $('body').innerWidth()
-        var neededLeftOffset = dropdown.position().left - (rightOffset - browserWidth)
-
-        if (neededLeftOffset < 0) {
-          dropdown.css({ left: neededLeftOffset - 3 })
-        } else {
-          dropdown.css({ left: 0 })
-        }
+    var checkScreenWidth = function(vnode) {
+      let newValue;
+      if (window.innerWidth < 768) {
+        newValue = true;
+      } else {
+        newValue = false;
+      }
+      if (newValue != vnode.state.smallScreen) {
+        vnode.state.smallScreen = newValue;
+        m.redraw();
       }
     }
 
     return {
 
         oninit: function(vnode) {
+
+            if (window.appHasInit) {
+              throw 'header should not init more than once'
+            }
+            window.appHasInit = true;
+
+            vnode.state.smallScreen = true;
             vnode.state.peerChangeHandler = function() {
               libwip2p.Following.checkAllForUpdates()
             }
@@ -74,7 +81,17 @@ define([
         },
 
         oncreate: function(vnode) {
-          fixDropdowns();
+          vnode.state.dropdownListener = document.addEventListener('shown.bs.dropdown', function(event){
+            if (event.target.classList.contains('dropdown-event-catcher')) {
+              OffsetDropdown();
+            }
+          })
+
+          checkScreenWidth(vnode);
+
+          window.addEventListener('resize', function() {
+            checkScreenWidth(vnode);
+          })
         },
 
         ondestroy: function(vnode) {
@@ -83,56 +100,73 @@ define([
           libwip2p.Peers.events.off('authed', vnode.state.onAuthHandler);
           libwip2p.Following.events.off('update', vnode.state.followingUpdateHandler)
           libwip2p.Peers.events.off('peeridchanged', vnode.state.onPeerIdChangedHandler);
+          document.removeEventListener(vnode.state.dropdownListener);
         },
 
         view: function(vnode) {
-            return m("div.d-flex flex-column flex-md-row align-items-center p-2 px-md-4 mb-3 bg-white border-bottom box-shadow",
-                m("h4.my-0 mr-md-auto font-weight-normal",
-                    m(m.route.Link, {href:"/", style:"outline:none;color: inherit; text-decoration: none;"},
-                        m("img", {src:"assets/arborist.svg", style:"height:48px;width:48px;margin-right:10px;"}),
-                        "Arborist"
-                    )
-                ),
-                m("nav.navbar my-2 my-md-0 mr-md-3",
-                    m(m.route.Link, {class:"p-2 text-dark", href:"/"}, "Edit"),
-                    m(m.route.Link, {class:"p-2 text-dark", href:"/view"}, "View"),
-                    (function(){
-                      if (window.isPortrait) {
-                        return m(m.route.Link, {class:"p-2 text-dark", href:"/latest"}, "Latest");
-                      }
-                    })(),
-                    m(m.route.Link, {class:"p-2 text-dark", href:"/following"}, "Following", vnode.state.unreadCountElement),
-                    m(m.route.Link, {class:"p-2 text-dark", href:"/invites"}, "Invites"),
-                    m("div.dropdown dropdown-auto-adjust",
-                        m("a.p-2 text-dark", {href:"#", 'data-toggle':'dropdown'}, "Tools",
-                            m("div.dropdown-menu dropdown-menu-auto-adjust",
-                                m(m.route.Link, {class:"dropdown-item", href:"/ipfscheck"}, m("i.fas fa-globe"), " IPFS Dist. Checker"),
-                                m(m.route.Link, {class:"dropdown-item", href:"/importpaste"}, m("i.fas fa-file-import"), " IPFS Import"),
-                                m(m.route.Link, {class:"dropdown-item", href:"/ipldview"}, m("i.fas fa-binoculars"), " IPLD Viewer"),
-                                m(m.route.Link, {class:"dropdown-item", href:"/importbundle"}, m("i.fas fa-object-group"), " Signed Bundle Import"),
-                                m(m.route.Link, {class:"dropdown-item", href:"/importcar"}, m("i.fas fa-archive"), " Import CAR"),
-                                m("div.dropdown-divider"),
-                                m(m.route.Link, {class:"dropdown-item", href:"/enslist"}, m("i.fas fa-external-link-alt"), " ENS List"),
-                                m(m.route.Link, {class:"dropdown-item", href:"/yggdrasil"}, m("i.fas fa-sitemap"), " Yggdrasil Services"),
-                                m(m.route.Link, {class:"dropdown-item", href:"/blogger"}, m("i.fas fa-pen"), " Blogger"),
-                                m(m.route.Link, {class:"dropdown-item", href:"/livechat"}, m("i.fas fa-comment"), " Live Chat"),
-                                m(m.route.Link, {class:"dropdown-item", href:"/goyacy"}, m("i.fas fa-search"), " GoYacy")
-                            )
-                        )
-                    ),
-                    m("div.dropdown dropdown-auto-adjust",
-                        m("a.p-2 text-dark", {href:"#", 'data-toggle':'dropdown'}, "Info",
-                            m("div.dropdown-menu dropdown-menu-auto-adjust", {'aria-labelledby':'dropdown-info'},
-                                m(m.route.Link, {class:"dropdown-item", href:"/about", oncreate:m.route.link}, m("i.fas fa-info-circle"), " About"),
-                                m(m.route.Link, {class:"dropdown-item", href:"/faq", oncreate:m.route.link}, m("i.fas fa-question-circle"), " FAQ"),
-                                m(m.route.Link, {class:"dropdown-item", href:"/api", oncreate:m.route.link}, m("i.fas fa-project-diagram"), " API")
-                            )
-                        )
-                    ),
-                    m(m.route.Link, {class:"p-2 text-dark", href:"/donate"}, "Donate")
-                ),
+
+          let navType = "navbar-nav me-3 justify-content-end";
+          if (vnode.state.smallScreen) {
+            navType = "nav justify-content-center";
+          }
+          let mainNavItems = m("ul." + navType, {style:"width:100%"},
+            m("li.nav-item", m(m.route.Link, {class:"p-2x text-dark nav-link", href:"/"}, "Edit")),
+            m("li.nav-item", m(m.route.Link, {class:"p-2x text-dark nav-link", href:"/view"}, "View")),
+            (function(){
+              if (window.isPortrait) {
+                return m("li.nav-item", m(m.route.Link, {class:"p-2 text-dark nav-link", href:"/latest"}, "Latest"));
+              }
+            })(),
+            m("li.nav-item", m(m.route.Link, {class:"p-2 text-dark nav-link", href:"/following"}, "Following", vnode.state.unreadCountElement)),
+            m("li.nav-item", m(m.route.Link, {class:"p-2 text-dark nav-link", href:"/invites"}, "Invites")),
+            m("li.nav-item dropdown",
+              m("a.p-2 text-dark nav-link dropdown-event-catcher dropdown-toggle", {href:"#", 'data-bs-toggle':'dropdown'}, "Tools"),
+              m("div.dropdown-menu dropdown-menu-auto-adjust",
+                m("li", m(m.route.Link, {class:"dropdown-item", href:"/ipfscheck"}, m("i.fas fa-globe"), " IPFS Dist. Checker")),
+                m("li", m(m.route.Link, {class:"dropdown-item", href:"/importpaste"}, m("i.fas fa-file-import"), " IPFS Import")),
+                m("li", m(m.route.Link, {class:"dropdown-item", href:"/ipldview"}, m("i.fas fa-binoculars"), " IPLD Viewer")),
+                m("li", m(m.route.Link, {class:"dropdown-item", href:"/importbundle"}, m("i.fas fa-object-group"), " Signed Bundle Import")),
+                m("li", m(m.route.Link, {class:"dropdown-item", href:"/importcar"}, m("i.fas fa-archive"), " Import CAR")),
+                m("div.dropdown-divider"),
+                m("li", m(m.route.Link, {class:"dropdown-item", href:"/enslist"}, m("i.fas fa-external-link-alt"), " ENS List")),
+                m("li", m(m.route.Link, {class:"dropdown-item", href:"/yggdrasil"}, m("i.fas fa-sitemap"), " Yggdrasil Services")),
+                m("li", m(m.route.Link, {class:"dropdown-item", href:"/blogger"}, m("i.fas fa-pen"), " Blogger")),
+                m("li", m(m.route.Link, {class:"dropdown-item", href:"/livechat"}, m("i.fas fa-comment"), " Live Chat")),
+                m("li", m(m.route.Link, {class:"dropdown-item", href:"/goyacy"}, m("i.fas fa-search"), " GoYacy"))
+              )
+            ),
+            m("li.nav-item dropdown",
+              m("a.p-2 text-dark nav-link dropdown-event-catcher dropdown-toggle", {href:"#", 'data-bs-toggle':'dropdown'}, "Info"),
+              m("ul.dropdown-menu dropdown-menu-auto-adjust", {'aria-labelledby':'dropdown-info'},
+                m("li", m(m.route.Link, {class:"dropdown-item", href:"/about"}, m("i.fas fa-info-circle"), " About")),
+                m("li", m(m.route.Link, {class:"dropdown-item", href:"/faq"}, m("i.fas fa-question-circle"), " FAQ")),
+                m("li", m(m.route.Link, {class:"dropdown-item", href:"/api"}, m("i.fas fa-project-diagram"), " API"))
+              )
+            ),
+            m("li.nav-item", m(m.route.Link, {class:"p-2 text-dark nav-link", href:"/donate"}, "Donate"))
+          )
+
+          return m("nav.navbar navbar-expand-md ps-3", {style:"padding:0px;"},
+            m("div.container-fluid",
+              m(m.route.Link, {class:"navbar-brand", href:"/", style:"outline:none;color: inherit; text-decoration: none;"},
+                m("img", {src:"assets/arborist.svg", style:"height:48px;width:48px;margin-right:10px;"}),
+                "Arborist"
+              ),
+              (function(){
+                if (!vnode.state.smallScreen) {
+                  return mainNavItems;
+                }
+              })(),
+              m("div.me-2 mb-2 mt-2", {style:"display:inline-block;"},
                 m(Account)
-            )
+              )
+            ),
+            (function(){
+              if (vnode.state.smallScreen) {
+                return mainNavItems;
+              }
+            })()
+          )
         }
     }
 

@@ -1,14 +1,6 @@
 'use strict';
 
-define([
-    'gx/js-ipld-cbor-native-sha256/ipldcbor.min',
-    'gx/js-cid/cids.min',
-    'gx/buffer.js/buffer',
-], function(
-    IpldCbor,
-    Cid,
-    Bufferjs
-) {
+define(()=>{
 
     var serializeToBuffer = function(stringPasteDoc) {
         return new Promise(function(resolve, reject) {
@@ -25,8 +17,9 @@ define([
 
             var encodedDoc = encodeSpecials(pasteDoc);
 
-            var cborData = IpldCbor.util.serialize(encodedDoc);
-            resolve(cborData);
+            var cborData = libipfs.dagCbor.encode(encodedDoc);
+            let bCborData = Buffer.from(cborData)
+            resolve(bCborData);
         })
     }
 
@@ -38,10 +31,10 @@ define([
 
       return new Promise(function(resolve, reject){
           var bCbor;
-          if (Bufferjs.Buffer.isBuffer(byteData))
+          if (Buffer.isBuffer(byteData))
               bCbor = byteData;
           else
-              bCbor = Bufferjs.Buffer.from(byteData, 'base64');
+              bCbor = Buffer.from(byteData, 'base64');
 
           let pasteDoc = null;
           try {
@@ -72,7 +65,7 @@ define([
             } else if (obj[key].constructor.name == 'CID') {
                 var cid = new Cid(obj[key]);
                 obj[key] = {"/": cid.toString()}
-            } else if (Bufferjs.Buffer.isBuffer(obj[key])) {
+            } else if (Buffer.isBuffer(obj[key])) {
                 obj[key] = '0x' + obj[key].toString('hex');
             } else if (typeof obj[key] == 'object') {
                 decodeSpecials(obj[key]);
@@ -84,15 +77,15 @@ define([
     var getCid = function(data) {
         return new Promise(function(resolve, reject) {
             var bCbor;
-            if (Bufferjs.Buffer.isBuffer(data) == false)
-              bCbor = Bufferjs.Buffer.from(data, 'base64');
+            if (Buffer.isBuffer(data) == false)
+              bCbor = Buffer.from(data, 'base64');
             else {
               bCbor = data;
             }
-            IpldCbor.util.cid(bCbor)
-            .then(function(cid) {
-                resolve(cid);
-            })
+
+            let digest = sha256.digest(bCbor)
+            var cid = Cid.create(1, dagCbor.code, digest)
+            resolve(cid);
         })
     }
 
@@ -101,7 +94,7 @@ define([
         // if the data is a string
         if (typeof obj == 'string') {
             if (obj.startsWith('0x'))
-                return Bufferjs.Buffer.from(obj.substr(2), 'hex');
+                return Buffer.from(obj.substr(2), 'hex');
             else
                 return obj;
         }
@@ -140,7 +133,7 @@ define([
                 if (re.test(obj[key])) {
                     // replace binary strings with Buffers
                     try {
-                      newObj[key] = Bufferjs.Buffer.from(obj[key].substr(2), 'hex');
+                      newObj[key] = Buffer.from(obj[key].substr(2), 'hex');
                     } catch (e) {
                       newObj[key] = obj[key];
                     }
@@ -154,6 +147,13 @@ define([
 
         return newObj;
     }
+
+    const sha256 = window.libipfs.multiformats.hasher.from({
+      name: 'sha2-256',
+      code: 0x12,
+      encode: (input) => libipfs.shajs('sha256').update(input).digest()
+    })
+    var dagCbor = window.libipfs.dagCbor;
 
     return {
         serializeToBuffer: serializeToBuffer,

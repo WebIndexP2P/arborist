@@ -1,14 +1,10 @@
 'use strict';
 
 define([
-    'gx/js-cid/cids.min',
-
     'lib/pastedoc',
     'lib/refreshlistener',
     'lib/utils'
 ], function(
-    Cid,
-
     PasteDoc,
     RefreshListener,
     Utils
@@ -17,12 +13,12 @@ define([
     var defaultIpfsPubNodesProvider = "0xdf66019796d5214d1dad0aa671f70e1e079aee10";
 
     var fetchIPs = function(vnode) {
-      vnode.state.ipsLoaded = m("span.badge badge-warning", {style:"float:right;"}, "loading nodes...");
+      vnode.state.ipsLoaded = m("span.badge bg-warning", {style:"float:right;"}, "loading nodes...");
       return libwip2p.Peers.getActivePeerSession()
       .then((session)=>{
         return session.sendMessage({
           method: "bundle_get",
-          params: [{account:defaultIpfsPubNodesProvider}]
+          params: [{account: defaultIpfsPubNodesProvider}]
         })
       })
       .then(function(response){
@@ -53,7 +49,7 @@ define([
 
     var addFiveAndGo = function(vnode) {
 
-        var tmpCid = new Cid(vnode.state.cid);
+        var tmpCid = Cid.parse(vnode.state.cid);
 
         var candidates = [];
         for (var a = 0; a < vnode.state.openNodes.length; a++) {
@@ -165,7 +161,7 @@ define([
         node.state = 'checking';
         m.redraw();
 
-        var tmpCid = new Cid(vnode.state.cid);
+        var tmpCid = Cid.parse(vnode.state.cid);
         var path;
         if (tmpCid.codec == 'dag-cbor') {
           path = "/api/v0/dag/get?arg=" + vnode.state.cid;
@@ -246,7 +242,7 @@ define([
                   if (Array.isArray(opennodes)) {
                     vnode.state.openNodes = opennodes;
                   }
-                  vnode.state.ipsLoaded = m("span.badge badge-success", {style:"float:right;"}, vnode.state.openNodes.length + " public IPFS nodes loaded");
+                  vnode.state.ipsLoaded = m("span.badge bg-success", {style:"float:right;"}, vnode.state.openNodes.length + " public IPFS nodes loaded");
                   m.redraw();
               })
             }
@@ -287,10 +283,8 @@ define([
                         vnode.state.ipsLoaded,
                         m("label", "Content Hash (CID)"),
                         m("div.input-group mb-3",
-                            m("input.form-control", {id:"ipfscheck_cid", type:"text", value: vnode.state.cid, onchange: function(e){vnode.state.cid = e.target.value;}}),
-                            m("div.input-group-append",
-                                goBtn
-                            )
+                            m("input.form-control", {id:"ipfscheck_cid", type:"text", value: vnode.state.cid, oninput: function(e){vnode.state.cid = e.target.value;}}),
+                            goBtn
                         ),
                         m("div.form-check", {style:"margin-bottom:10px;"},
                             m("input.form-check-input", corsCheckbox),
@@ -309,7 +303,7 @@ define([
 
                                 return m("li.list-group-item",
                                     node.url,
-                                    m("span.badge badge-" + badgeColor, {style:"float:right;"}, node.state)
+                                    m("span.badge bg-" + badgeColor, {style:"float:right;"}, node.state)
                                 )
                             })
                         )
