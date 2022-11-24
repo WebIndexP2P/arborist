@@ -46,9 +46,9 @@
       "version": "0.2.4"
     },
     {
-      "hash": "QmdC4zKz9p4zxjUta2BELd6rPPJKLdPwqerH24p9NkSpsJ",
+      "hash": "QmPNj1MBTKVaiVATicbRxFfxRZwVP8P6WzEGuxaHb3Cyzo",
       "name": "wip2p-settings",
-      "version": "0.1.9"
+      "version": "0.1.10"
     },
     {
       "hash": "QmQF4NV3sSPm7cjMYms4xDgoLwqMXrcz8YyMcdw1N4mKbb",
@@ -62,12 +62,14 @@
   "name": "arborist",
   "scripts": {
     "build": "node bundle.js",
+    "car": "../go-car/cmd/car/car c -o arborist.car build/*",
     "clean": "rimraf build/",
     "publish": "ipfs add build -r",
-    "car": "../go-car/cmd/car/car c -o arborist.car build/*",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "web": "devserver -r src -b 0.0.0.0:7000 -include gx/libwip2p:../libwip2p/dist",
-    "web-build": "devserver -r build -b 0.0.0.0:7000 --nogx"
+    "web": "devserver -r src -b 0.0.0.0:7000",
+    "web-build": "devserver -r build -b 0.0.0.0:7000 --nogx",
+    "web-dev": "devserver -r src -b 0.0.0.0:7000 -include gx/libwip2p:../libwip2p/dist"
   },
-  "version": "0.8.13"
+  "version": "0.8.14"
 }
+

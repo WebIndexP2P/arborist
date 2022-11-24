@@ -64,17 +64,35 @@ define([
             self.curCid = cid;
 
             var isDagCbor = false;
+            var isRawData = false;
             try {
                 var tmpCid = Cid.parse(cid);
                 if (tmpCid.code == libipfs.dagCbor.code)
                     isDagCbor = true;
+                if (tmpCid.code == 85) {
+                  isRawData = true;
+                }
             } catch(err) {
                 console.log(err)
             }
 
             if (isDagCbor) {
-              let d = libipfs.dagCbor.decode(buf);
-              return d
+              try {
+                let d = libipfs.dagCbor.decode(buf);
+                return d
+              } catch (err) {
+                isDagCbor = false;
+                console.error(err)
+              }
+            }
+
+            if (isRawData) {
+              return buf;
+            }
+
+            if (!isDagCbor) {
+              let d = libipfs.dagPB.decode(buf)
+              return d;
             }
         })
         .then(function(cborDoc){

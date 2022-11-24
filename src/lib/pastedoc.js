@@ -62,8 +62,9 @@ define(()=>{
         for (var key in obj) {
             if (obj[key] == null) { // do nothing
               obj[key] = null;
-            } else if (obj[key].constructor.name == 'CID') {
-                var cid = new Cid(obj[key]);
+            } else if (obj[key].hasOwnProperty('asCID')) {
+                //var cid = new Cid(obj[key]);
+                var cid = obj[key];
                 obj[key] = {"/": cid.toString()}
             } else if (Buffer.isBuffer(obj[key])) {
                 obj[key] = '0x' + obj[key].toString('hex');
