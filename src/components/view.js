@@ -61,24 +61,18 @@ define([
             libwip2p.Following.markAsRead(vnode.state.account, vnode.state.result.timestamp);
             vnode.state.queryInProgress = false;
 
-            if (vnode.state.result.multihash) {
-              var mhashBuf = Buffer.from(vnode.state.result.multihash.substr(2), 'hex');
-
-              // mhashBuf comes in as CidV0, convert to V1
-              let cid = Cid.decode(mhashBuf);
-              let digest = cid.multihash;
-              cid = Cid.create(1, libipfs.dagCbor.code, digest);
-
-              vnode.state.cid = cid.toString();
-              vnode.state.cidLink = m("a", {"data-toggle":"dropdown", href:"#"}, vnode.state.cid);
-            }
+            vnode.state.cid = libipfs.multiformats.CID.parse(vnode.state.result.rootCid);
+            vnode.state.cidString = vnode.state.result.rootCid.toString();
+            vnode.state.cidLink = m("a", {"data-toggle":"dropdown", href:"#"}, vnode.state.cidString);
 
             // only do the cbor stuff if it exists
             if (vnode.state.result.hasOwnProperty('cborData')) {
 
                 PasteDoc.getCid(vnode.state.result.cborData[0])
                 .then(function(clientCalcedCid) {
-                    if (clientCalcedCid.toString() == vnode.state.cid) {
+                    let bufCalcedMultihash = libipfs.buffer.Buffer.from(clientCalcedCid.multihash.bytes)
+                    let bufClaimedMultihash = libipfs.buffer.Buffer.from(vnode.state.cid.multihash.bytes)
+                    if (bufCalcedMultihash.equals(bufClaimedMultihash)) {
                         vnode.state.cidVerifyCheck = m("i.fas fa-check-circle", {style:"color:green;font-size:30px;"})
                     } else {
                         vnode.state.cidVerifyCheck = m("i.fas fa-times-circle", {style:"color:red;font-size:30px;"})
@@ -104,7 +98,8 @@ define([
 
             // verify sig asynchronously
             setTimeout(function(){
-                var sigVerify = SigVerify(vnode.state.account, vnode.state.result.timestamp, vnode.state.result.multihash, vnode.state.result.signature);
+                let mhashHex = '0x' + Buffer.from(vnode.state.cid.multihash.bytes).toString('hex')
+                var sigVerify = SigVerify(vnode.state.account, vnode.state.result.timestamp, mhashHex, vnode.state.result.signature);
                 if (sigVerify)
                     vnode.state.sigVerifyCheck = m("i.fas fa-check-circle", {style:"color:green;font-size:30px;"})
                 else

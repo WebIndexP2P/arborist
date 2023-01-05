@@ -25,7 +25,8 @@ define([
     'components/importbundle',
     'components/latestpastes',
     'components/goyacy',
-    'components/importcar'
+    'components/importcar',
+    'components/uploadfolder'
 ], function(
     MithrilNav,
     Version,
@@ -51,7 +52,8 @@ define([
     PageImportBundle,
     PageLatestPastes,
     PageGoYacy,
-    PageImportCar
+    PageImportCar,
+    PageUploadFolder
 ){
 
     MithrilNav.overrideMithrilRouting();
@@ -198,6 +200,9 @@ define([
           }},
           "/importcar": {render: function() {
               return m(PageLayout, {}, m(PageImportCar))
+          }},
+          "/uploadfolder": {render: function() {
+              return m(PageLayout, {}, m(PageUploadFolder))
           }}
       })
 

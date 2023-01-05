@@ -45,6 +45,9 @@ var filesToCopy = [
 
     {type:"file", src: "/node_modules/tweetnacl/nacl.min.js", dst:"/npm/tweetnacl/nacl.min.js"},
 
+    {type:"file", src: "/node_modules/ipfs-unixfs-importer/dist/index.min.js", dst:"/npm/ipfs-unixfs-importer/dist/index.min.js"},
+    {type:"file", src: "/node_modules/blockstore-core/dist/index.min.js", dst:"/npm/blockstore-core/dist/index.min.js"},
+
     {type:"file", src: "/gx/libwip2p/libwip2p.js"},
 
     {type:"file", src: "/gx/libipfs/libipfs.min.js"}
@@ -64,6 +67,9 @@ results.on('close', function(){
     .then(renameIndex)
     .then(copyFiles)
     .then(modifyIndexFile)
+    .catch((err)=>{
+        console.log(err)
+    })
 })
 
 var uglify = function() {
@@ -135,6 +141,9 @@ var copyFiles = function() {
                         else
                             resolve();
                     });
+                })
+                .catch((err)=>{
+                    console.log(err)
                 })
             }
         }

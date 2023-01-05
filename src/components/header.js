@@ -127,6 +127,7 @@ define([
                 m("li", m(m.route.Link, {class:"dropdown-item", href:"/ipldview"}, m("i.fas fa-binoculars"), " IPLD Viewer")),
                 m("li", m(m.route.Link, {class:"dropdown-item", href:"/importbundle"}, m("i.fas fa-object-group"), " Signed Bundle Import")),
                 m("li", m(m.route.Link, {class:"dropdown-item", href:"/importcar"}, m("i.fas fa-archive"), " Import CAR")),
+                m("li", m(m.route.Link, {class:"dropdown-item", href:"/uploadfolder"}, m("i.fas fa-folder"), " Upload Folder")),
                 m("div.dropdown-divider"),
                 m("li", m(m.route.Link, {class:"dropdown-item", href:"/enslist"}, m("i.fas fa-external-link-alt"), " ENS List")),
                 m("li", m(m.route.Link, {class:"dropdown-item", href:"/yggdrasil"}, m("i.fas fa-sitemap"), " Yggdrasil Services")),

@@ -10,15 +10,19 @@ define(function() {
     vnode.state.sigBundle = {};
     vnode.state.sigBundle.account = libwip2p.Account.getWallet().address;
     vnode.state.sigBundle.car = vnode.state.carBytes.toString('base64');
-    //console.log(Buffer.from(vnode.state.rootCid.multihash.bytes).toString('hex'))
-    let bMultihash = Buffer.from(vnode.state.rootCid.multihash.bytes);
-    vnode.state.sigBundle.multihash = '0x' + bMultihash.toString('hex');
+    //console.log(Buffer.from(vnode.state.rootCid.multihash.bytes).toString('hex'))    
+    vnode.state.sigBundle.rootCid = vnode.state.rootCid.toString();
 
-    libwip2p.Account.sign(timestamp, vnode.state.sigBundle.multihash)
+    let bMultihash = Buffer.from(vnode.state.rootCid.multihash.bytes);
+    let hexMultihash = '0x' + bMultihash.toString('hex');
+
+    libwip2p.Account.sign(timestamp, hexMultihash)
     .then((signature)=>{
       vnode.state.sigBundle.signature = signature;
       //vnode.state.signature = '0x' + vnode.state.sigBundle.bSignature.toString('hex');
       vnode.state.sigBundle.timestamp = timestamp;
+
+      console.log(vnode.state.sigBundle)
 
       return libwip2p.Peers.getActivePeerSession();
     })

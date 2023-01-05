@@ -24,8 +24,8 @@ define(function() {
       return;
     }
 
-    if (obj.hasOwnProperty('multihash') == false) {
-      $.growl.error({message: "Missing root_multihash"})
+    if (obj.hasOwnProperty('rootCid') == false) {
+      $.growl.error({message: "Missing rootCid"})
       return;
     }
 

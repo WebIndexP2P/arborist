@@ -42,8 +42,9 @@ define([
         })
         .then(function(cid) {
             vnode.state.cid = cid.toString();
-            vnode.state.sigBundle.bMultihash = Buffer.from(cid.multihash.bytes);
-            let mhashHex = '0x' + vnode.state.sigBundle.bMultihash.toString('hex');
+            vnode.state.sigBundle.rootCid = cid;
+            let bMultihash = Buffer.from(cid.multihash.bytes);
+            let mhashHex = '0x' + bMultihash.toString('hex');
             return libwip2p.Account.sign(timestamp, mhashHex);
         })
         .then(function(signature) {
@@ -83,7 +84,7 @@ define([
           let bundle = {
             account: libwip2p.Account.getWallet().address,
             timestamp: vnode.state.sigBundle.timestamp,
-            multihash: '0x' + vnode.state.sigBundle.bMultihash.toString('hex'),
+            rootCid: vnode.state.sigBundle.rootCid.toString(),
             signature: '0x' + vnode.state.sigBundle.bSignature.toString('hex'),
             cborData: cborData
           }
