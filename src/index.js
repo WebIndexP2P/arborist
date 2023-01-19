@@ -147,6 +147,9 @@ define([
           "/settings": {render: function() {
               return m(PageLayout, {}, m(settingsComponent));
           }},
+          "/settings/:tab": {render: function() {
+            return m(PageLayout, {}, m(settingsComponent));
+          }},
           "/following": {render: function() {
               return m(PageLayout, {}, m(PageFollowing))
           }},

@@ -17,6 +17,8 @@ define(()=>{
 
             var encodedDoc = encodeSpecials(pasteDoc);
 
+            console.log(encodedDoc)
+
             var cborData = libipfs.dagCbor.encode(encodedDoc);
             let bCborData = Buffer.from(cborData)
             resolve(bCborData);
@@ -120,9 +122,10 @@ define(()=>{
             } else if (typeof obj[key] == 'object') {
                 if (Object.keys(obj[key]).length == 1 && obj[key].hasOwnProperty('/')) {
                     try {
-                      var c = new Cid(obj[key]["/"]);
+                      var c = Cid.parse(obj[key]["/"]);
                       newObj[key] = c;
                     } catch (err) {
+                      console.log(err)
                       console.log("appears to be an invalid CID");
                     }
                 } else {

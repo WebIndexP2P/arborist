@@ -5,9 +5,6 @@
     optimize: "none",
     paths: {
       "gx/ethereum-blockies": "empty:",
-      "gx/js-ipld-cbor-native-sha256": "empty:",
-      "gx/js-cid": "empty:",
-      "gx/buffer.js": "empty:",
-      "gx/wip2p-settings": "../vendor/gx/ipfs/QmZMTfra392MLAagJhV898gVfExCoT74pAMaQ2W3y14aVY/wip2p-settings"
+      "gx/wip2p-settings": "../vendor/gx/ipfs/QmVUur7hc5ivPfnojuhJg86gfezh2SHx7eE5TJt6xobGnQ/wip2p-settings"
     }
 })
