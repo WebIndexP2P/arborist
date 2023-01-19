@@ -11,7 +11,8 @@ define(function() {
     }
 
     let ls = new libwip2p.LinkedSet();
-    ls.fetchByAccount(libwip2p.Account.getWallet().address)
+    ls.address = libwip2p.Account.getWallet().address
+    ls.fetch(libwip2p.Account.getWallet().address)
     .then(async ()=>{
       let iter = vnode.state.blockstore._all();
       let done = false;
