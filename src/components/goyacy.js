@@ -3,11 +3,11 @@
 define(function() {
 
   var fetchYacyNodes = function(vnode) {
-    vnode.state.bs = new libwip2p.BranchSet();
+    vnode.state.ls = new libwip2p.LinkedSet();
     libwip2p.Peers.getActivePeerSession()
     .then((session)=>{
       if (session.connState == 4) {
-        vnode.state.bs.FetchByAccount("0x7309653c893088d194a8c58c72a6f5d1a29fc77a", "/yacy")
+        vnode.state.ls.fetch("0x7309653c893088d194a8c58c72a6f5d1a29fc77a", "/yacy")
         .then((result)=>{
           vnode.state.yacyNodes = result;
           m.redraw();

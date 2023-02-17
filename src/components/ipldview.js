@@ -48,12 +48,13 @@ define([
     }
 
     var renderBreadcrumbs = function(vnode) {
-        vnode.state.breadcrumbsElement = m(IpldBreadcrumbs, {path: vnode.state.ipldwalk.getPath(), onLinkClick: onBreadcrumbClick.bind(null, vnode)});
+        let tmpPath = vnode.state.ipldwalk.getPath()
+        let pathArray = []
+        for (let a = 0; a < tmpPath.length; a++) {
+            pathArray.push(tmpPath[a].path);
+        }
+        vnode.state.breadcrumbsElement = m(IpldBreadcrumbs, {path: pathArray, wrapperStyle:"background-color:#e9ecef;border-radius:0.25rem;padding:5px;", onLinkClick: onBreadcrumbClick.bind(null, vnode)});
     }
-
-    /*var renderDagContent = function(vnode) {
-        vnode.state.dagContent = [ m(PrettyJson, {key: Math.round(), iplddoc: vnode.state.ipldwalk.getContentRaw(), onLinkClick: onLinkClick.bind(null, vnode)}) ]
-    }*/
 
     var onBreadcrumbClick = function(vnode, depth) {
         vnode.state.ipldwalk.navigateUp(depth)

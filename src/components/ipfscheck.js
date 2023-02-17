@@ -22,6 +22,7 @@ define([
         })
       })
       .then(function(response){
+        console.log(response)
         if (response.error) {
           $.growl.error({message: "Could not load public IPFS nodes"});
           return [];

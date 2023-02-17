@@ -1,15 +1,15 @@
 'use strict';
 
 define([
-    'lib/pastedoc',
     'lib/refreshlistener',
     'lib/blogger',
-    'components/limits'
+    'components/limits',
+    'components/ipldbreadcrumbs'
 ], function(
-    PasteDoc,
     RefreshListener,
     Blogger,
-    Limits
+    Limits,
+    IpldBreadcrumbs
 ) {
 
     var onPrepareClick = function(vnode) {
@@ -25,45 +25,33 @@ define([
             return false;
         }
 
-        vnode.state.sigBundle = {};
+        try {
+          rawData = JSON.parse(rawData)
+        } catch(err){}
 
-        return PasteDoc.serializeToBuffer(rawData)
-        .then(function(_cborPasteDoc){
+        vnode.state.linkedSet.update(vnode.state.currentPath, rawData, {encodeFromText: true})
+        vnode.state.cid = vnode.state.linkedSet.rootNode.cid.toString();
+        vnode.state.byteSize = vnode.state.linkedSet.getDocSizeAtPath(vnode.state.currentPath);
+        vnode.state.links = vnode.state.linkedSet.getLinksWithPath(vnode.state.currentPath, {onlyDagCborLinks: true});
+        
+        vnode.state.linkedSet.sign()
+        .then(()=>{
+          vnode.state.signature = "0x" + vnode.state.linkedSet.signature.toString('hex');
+          vnode.state.btnPrepareAndSignEnabled = false;
+          vnode.state.btnPublishEnabled = true;
 
-            vnode.state.sigBundle.cborPasteDoc = _cborPasteDoc;
-
-            vnode.state.byteSize = _cborPasteDoc.length;
-
+          renderCidAndSig(vnode);
+          renderBtnPrepareAndSign(vnode);
+          renderBtnPublish(vnode)
+          m.redraw();
+          setTimeout(()=>{
+            document.getElementById("btnPublishBreak").scrollIntoView(false);
+          }, 50)          
+        })
+        /*
             //if (vnode.state.byteSize > vnode.state.accountDetails.activeSizeLimit) {
             //    vnode.state.warnings.push("The paste data is larger than this account is currently allowed. Consider moving some of the data into a separate IPLD doc on IPFS and link to it. Click on the CID link below to manually upload via your configured IPFS node.")
-            //}
-
-            return PasteDoc.getCid(_cborPasteDoc);
-        })
-        .then(function(cid) {
-            vnode.state.cid = cid.toString();
-            vnode.state.sigBundle.rootCid = cid;
-            let bMultihash = Buffer.from(cid.multihash.bytes);
-            let mhashHex = '0x' + bMultihash.toString('hex');
-            return libwip2p.Account.sign(timestamp, mhashHex);
-        })
-        .then(function(signature) {
-            vnode.state.sigBundle.bSignature = Buffer.from(signature.substr(2), 'hex');
-            vnode.state.signature = '0x' + vnode.state.sigBundle.bSignature.toString('hex');
-            vnode.state.sigBundle.timestamp = timestamp;
-
-            if (vnode.state.accountDetails != 'account not found') {
-              vnode.state.btnPublishEnabled = true;
-              renderBtnPublish(vnode);
-            }
-            vnode.state.btnPrepareAndSignEnabled = false;
-
-            renderCidAndSig(vnode);
-            renderBtnPrepareAndSign(vnode);
-
-            m.redraw();
-            document.getElementById("btnPublishBreak").scrollIntoView(false);
-        })
+        */
     }
 
     var onPublishClick = function(vnode, e) {
@@ -76,20 +64,7 @@ define([
         m.redraw();
         document.getElementById("btnPublishBreak").scrollIntoView(false);
 
-        var cborData = []
-        cborData.push(vnode.state.sigBundle.cborPasteDoc.toString('base64'));
-
-        libwip2p.Peers.getActivePeerSession()
-        .then((session)=>{
-          let bundle = {
-            account: libwip2p.Account.getWallet().address,
-            timestamp: vnode.state.sigBundle.timestamp,
-            rootCid: vnode.state.sigBundle.rootCid.toString(),
-            signature: '0x' + vnode.state.sigBundle.bSignature.toString('hex'),
-            cborData: cborData
-          }
-          return session.sendMessage({method:"bundle_save", params:[bundle]})
-        })
+        vnode.state.linkedSet.publish()
         .then(function(response) {
             if (response.error) {
                 vnode.state.publishProgress = "error";
@@ -108,7 +83,9 @@ define([
                     libwip2p.Following.addNewPaste(account, vnode.state.sigBundle.timestamp);
                 }
 
-                m.redraw();
+                vnode.state.linkedSet = null;
+                vnode.state.currentPath = "/";
+                fetchAccountDetails(vnode);
             }
         })
         .catch(function(err){
@@ -182,10 +159,6 @@ define([
       })
     }
 
-    var doRequestInviteWithKey = function(vnode) {
-      console.log('do it')
-    }
-
     var onManualUploadToIpfs = function(vnode, e) {
         e.preventDefault();
         new Promise(function(resolve, reject) {
@@ -226,12 +199,12 @@ define([
 
     var renderCidAndSig = function(vnode) {
       vnode.state.cidAndSig = m("div.alert alert-primary",
-        m("div.dropdown", m("span.badge bg-primary", "CID"), " = ", m("a", {href: "#", "data-toggle":"dropdown", style:'word-wrap:break-word;font-family:"Courier New", Courier, monospace;'}, vnode.state.cid),
+        m("div.dropdown", m("span.badge bg-primary", "CID"), " = ", m("a", {href: "#", "data-bs-toggle":"dropdown", style:'word-wrap:break-word;font-family:"Courier New", Courier, monospace;'}, vnode.state.cid),
           m("div.dropdown-menu",
             m("a.dropdown-item", {href:"#", onclick: onManualUploadToIpfs.bind(null, vnode)}, m("i.fas fa-upload"), " Upload to IPFS"),
             m("a.dropdown-item", {target:"_blank", href:window.preferedIpfsGateway + '/api/v0/dag/get?arg=' + vnode.state.cid}, m("i.fas fa-binoculars"), " View IPFS content"),
-            m("a.dropdown-item", {href:"/ipfscheck/" + vnode.state.cid, oncreate: m.route.link}, m("i.fas fa-globe"), " IPFS Dist. Checker"),
-            m("a.dropdown-item", {href:"/ipldview/" + vnode.state.cid, oncreate: m.route.link}, m("i.fas fa-project-diagram"), " IPLD Viewer")
+            m(m.route.Link, {selector:"a.dropdown-item", href:"/ipfscheck/" + vnode.state.cid, oncreate: m.route.link}, m("i.fas fa-globe"), " IPFS Dist. Checker"),
+            m(m.route.Link, {selector:"a.dropdown-item", href:"/ipldview/" + vnode.state.cid}, m("i.fas fa-project-diagram"), " IPLD Viewer")
           )
         ),
         m("div", {style:'margin-top:5px;word-wrap:break-word;font-family:"Courier New", Courier, monospace;'}, m("span.badge bg-primary", "Signature"), " = ", vnode.state.signature)
@@ -289,7 +262,7 @@ define([
             return;
 
         vnode.state.cidAndSig = null;
-        vnode.state.msg = e.target.value;
+        vnode.state.msg = e.target.value;        
         vnode.state.signature = null;
         vnode.state.byteSize = 'recalc';
         vnode.state.cid = null;
@@ -314,7 +287,6 @@ define([
 
             if (accountDetails == 'account not found') {
               vnode.state.queryInProgress = false;
-              vnode.state.activeSizeLimit = 32;
               vnode.state.accountNotFound = true;
               renderBtnRequestInvite(vnode);
               m.redraw();
@@ -325,28 +297,17 @@ define([
               vnode.state.accountDetails.activeSizeLimit = 64 * 1024;
             }
 
-            if (accountDetails.cborData) {
-              var cborBuf = Buffer.from(accountDetails.cborData[0], 'base64');
-              vnode.state.byteSize = cborBuf.length;
+            let ls = new libwip2p.LinkedSet()
+            vnode.state.linkedSet = ls;
+            ls.fetch(vnode.state.account, "/")
+            .then((content)=>{
+              vnode.state.byteSize = ls.rootNode.sizeBytes
+              vnode.state.msg = ls.getContentByPath("/", {outputAsText: true, dontResolveCidsInContent: true})
+              vnode.state.links = ls.getLinksWithPath(vnode.state.currentPath, {onlyDagCborLinks: true});
 
-              return PasteDoc.deserialize(cborBuf)
-              .then(function(pasteDoc){
-
-                  if (Buffer.isBuffer(pasteDoc)) {
-                    vnode.state.msg = '0x' + pasteDoc.toString('hex');
-                  } else if (typeof pasteDoc == 'string'){
-                    vnode.state.msg = pasteDoc;
-                  } else {
-                    vnode.state.msg = JSON.stringify(pasteDoc, null, '   ');
-                  }
-
-                  vnode.state.queryInProgress = false;
-                  m.redraw();
-              })
-            } else {
               vnode.state.queryInProgress = false;
               m.redraw();
-            }
+            }) 
         })
         .catch(function(err){
           if (err == 'peerSession not ready') {}
@@ -373,11 +334,10 @@ define([
           return;
         }
 
-        return PasteDoc.serializeToBuffer(vnode.state.msg)
-        .then(function(cborPasteDoc){
-            vnode.state.byteSize = cborPasteDoc.length;
-            m.redraw();
-        })
+        let ls = new libwip2p.LinkedSet()
+        ls.update("/", vnode.state.msg, {createMissing: true, encodeFromText: true})
+
+        vnode.state.byteSize = ls.rootNode.sizeBytes;
     }
 
     var onPageReload = function(vnode, e) {
@@ -477,6 +437,82 @@ define([
       $('#inviteKey').focus();
     }
 
+    let onLinkifyClick = function(vnode) {
+      let linkifyPath = document.getElementById("linkifyPath").value;
+
+      let ls = vnode.state.linkedSet;
+      try {
+        if (ls.isPathACid(linkifyPath)) {
+          vnode.state.linkifyError = m("div.invalid-feedback", {style:"display:inherit;"}, "already linked")
+          return;
+        } else {
+          ls.linkify(linkifyPath)
+        }
+      } catch(err) {
+        if (typeof err == 'object') {
+          vnode.state.linkifyError = m("div.invalid-feedback", {style:"display:inherit;"}, err.message)
+        } else {
+          vnode.state.linkifyError = m("div.invalid-feedback", {style:"display:inherit;"}, err)
+        }
+        m.redraw();
+        return;
+      }
+      
+      vnode.state.byteSize = ls.rootNode.sizeBytes
+      vnode.state.msg = ls.getContentByPath(vnode.state.currentPath, {outputAsText: true, dontResolveCidsInContent: true})
+      vnode.state.links = ls.getLinksWithPath(vnode.state.currentPath, {onlyDagCborLinks: true});
+
+      vnode.state.btnPrepareAndSignEnabled = true;
+      vnode.state.btnPublishEnabled = false;
+      vnode.state.cid = null;
+      vnode.state.signature = null;
+      vnode.state.cidAndSig = null;
+
+      renderBtnPrepareAndSign(vnode);
+      renderBtnPublish(vnode)
+      m.redraw();
+    }
+
+    let onNavigateClick = function(path, cid, vnode, e){
+      e.preventDefault()
+      
+      if (vnode.state.currentPath == "/") {
+        vnode.state.currentPath = path;
+      } else {
+        vnode.state.currentPath += path;
+      }
+      
+      let ls = vnode.state.linkedSet;
+      let ln = ls.getContentByPath(vnode.state.currentPath, {preferLinkedNode: true})
+
+      if (ln.docBytes == null || ln.docBytes.length == 0) {
+        ls.fetchCid(cid)
+        .then((result)=>{
+          vnode.state.byteSize = ln.sizeBytes
+          vnode.state.msg = ls.getContentByPath(vnode.state.currentPath, {outputAsText: true, dontResolveCidsInContent: true})
+          vnode.state.links = ln.getLinksWithPath({onlyDagCborLinks: true});
+          m.redraw();
+        })
+      } else {
+        vnode.state.byteSize = ln.sizeBytes
+        vnode.state.msg = ls.getContentByPath(vnode.state.currentPath, {outputAsText: true, dontResolveCidsInContent: true})
+        vnode.state.links = ln.getLinksWithPath({onlyDagCborLinks: true});
+        m.redraw();
+      }
+    }
+
+    let onBreadcrumbClick = (vnode, idx)=>{
+      let pathParts = vnode.state.currentPath.split("/")
+      pathParts.splice(0,1)
+      pathParts.splice(idx, pathParts.length)
+      vnode.state.currentPath = "/" + pathParts.join("/")
+
+      let ls = vnode.state.linkedSet;
+      vnode.state.byteSize = ls.rootNode.sizeBytes
+      vnode.state.msg = ls.getContentByPath(vnode.state.currentPath, {outputAsText: true, dontResolveCidsInContent: true})
+      vnode.state.links = ls.getLinksWithPath(vnode.state.currentPath, {onlyDagCborLinks: true});
+    }
+
     return {
         oninit: function(vnode) {
 
@@ -489,6 +525,10 @@ define([
             vnode.state.btnPublish = null;
             vnode.state.btnPublishEnabled = false;
             vnode.state.btnRequestInvite = null;
+
+            vnode.state.linkedSet = null;
+            vnode.state.links = []
+            vnode.state.currentPath = "/"
 
             vnode.state.warnings = [];
 
@@ -567,20 +607,51 @@ define([
 
             return m("div",
                 m("div",
-                    "Content:",
-                    m("br"),
+                    m("div",
+                      "Content:", m(IpldBreadcrumbs, {onLinkClick: onBreadcrumbClick.bind(null, vnode), wrapperStyle: "margin-left:10px;display:inline-block;", path: ("root" + vnode.state.currentPath).split("/")}),
+                    ),
                     (function(){
                         if (vnode.state.queryInProgress == true) {
                             return m("div.spinner-border", {style:"margin-bottom:15px;"})
                         } else {
                             return m("textarea.form-control", {
                                 id:"frm-data", style:"max-widthx:800px;height:300px;",
-                                onkeyup: onMsgChange.bind(this, vnode), onchange: onMsgChange.bind(this, vnode),
+                                oninput: onMsgChange.bind(this, vnode),
                                 value: vnode.state.msg,
                                 readonly: readOnly
                             })
                         }
                     })(),
+                    m("div", {style:"margin-top:10px;"},
+                      m("div", "Links:"),
+                      m("div", {style:"border:1px solid #ced4da;border-radius:5px;padding:10px;"},
+                        m("div.input-group", {style:"max-width:600px;"},
+                          m("input.form-control", {type:"text", id:"linkifyPath", placeholder:"/root/some/path"}),
+                          m("button.btn btn-outline-secondary", {onclick: onLinkifyClick.bind(null, vnode)}, "Linkify"),                          
+                        ),
+                        vnode.state.linkifyError,                        
+                        m("div", {style:"margin-top:10px;"},
+                          (()=>{
+                            if (vnode.state.links.length == 0) {
+                              return m("div", "No links")
+                            }
+                          })(),
+                          m("table.table table-striped",
+                          m("tbody",
+                              vnode.state.links.map((link, idx)=>{
+                                return m("tr", m("td",
+                                  m("div.col-12", 
+                                    m(m.route.Link, {href:"#", onclick: onNavigateClick.bind(null, link.path, link.cid, vnode)}, link.path),
+                                    " --> ", 
+                                    m(m.route.Link, {href:"#", style:"font-family:andale mono, monospace;word-break: break-all;"}, link.cid)
+                                  )
+                                ))
+                              })
+                            )
+                          )
+                        )
+                      )                      
+                    ),                  
                     m(Limits, {
                         pasteRecalcCallback: onPasteRecalc.bind(this, vnode),
                         accountDetails: vnode.state.accountDetails,

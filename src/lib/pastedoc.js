@@ -17,7 +17,7 @@ define(()=>{
 
             var encodedDoc = encodeSpecials(pasteDoc);
 
-            console.log(encodedDoc)
+            //console.log(encodedDoc)
 
             var cborData = libipfs.dagCbor.encode(encodedDoc);
             let bCborData = Buffer.from(cborData)
