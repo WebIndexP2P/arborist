@@ -298,11 +298,15 @@ define([
             }
 
             let ls = new libwip2p.LinkedSet()
+            ls.address = vnode.state.account;
             vnode.state.linkedSet = ls;
             ls.fetch(vnode.state.account, "/")
             .then((content)=>{
               vnode.state.byteSize = ls.rootNode.sizeBytes
               vnode.state.msg = ls.getContentByPath("/", {outputAsText: true, dontResolveCidsInContent: true})
+              if (vnode.state.msg == '{}') {
+                vnode.state.msg = "";
+              }
               vnode.state.links = ls.getLinksWithPath(vnode.state.currentPath, {onlyDagCborLinks: true});
 
               vnode.state.queryInProgress = false;
