@@ -81,8 +81,8 @@ define(function() {
       vnode.state.publishPath = "";
       vnode.state.sigBundle = {};
 
-      loadDeps("/npm/ipfs-unixfs-importer/dist/index.min.js")
-      loadDeps("/npm/blockstore-core/dist/index.min.js")
+      loadDeps("npm/ipfs-unixfs-importer/dist/index.min.js")
+      loadDeps("npm/blockstore-core/dist/index.min.js")
     },
 
     oncreate: function(vnode) {
